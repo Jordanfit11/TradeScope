@@ -6,6 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <title>TradeZilla Pro - Journal de Trading</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap');
         
@@ -24,6 +25,21 @@
             --shadow: rgba(99, 102, 241, 0.1);
         }
 
+        [data-theme="light"] {
+            --bg-primary: #F8FAFC;
+            --bg-secondary: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --sidebar-bg: #F1F5F9;
+            --accent-primary: #6366F1;
+            --accent-secondary: #8B5CF6;
+            --accent-green: #10B981;
+            --accent-red: #EF4444;
+            --text-primary: #0F172A;
+            --text-secondary: #64748B;
+            --border: #E2E8F0;
+            --shadow: rgba(99, 102, 241, 0.1);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -37,95 +53,12 @@
             overflow-x: hidden;
         }
 
-        /* Google Sign In Banner */
-        .google-banner {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .google-banner.hidden {
-            display: none;
-        }
-
-        .google-banner-text {
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .google-sign-in-btn {
-            background: white;
-            color: var(--bg-primary);
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            transition: all 0.2s ease;
-        }
-
-        .google-sign-in-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .sync-status {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.85rem;
-            z-index: 999;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .sync-status.show {
-            opacity: 1;
-        }
-
-        .sync-icon {
-            width: 16px;
-            height: 16px;
-            border: 2px solid var(--accent-green);
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
         .app-container {
             display: flex;
             height: 100vh;
-            padding-top: 0;
         }
 
-        .app-container.with-banner {
-            padding-top: 64px;
-        }
-
+        /* Sidebar */
         .sidebar {
             width: 260px;
             background: var(--sidebar-bg);
@@ -138,11 +71,6 @@
             height: 100vh;
             z-index: 100;
             transition: transform 0.3s ease;
-        }
-
-        .sidebar.with-banner {
-            top: 64px;
-            height: calc(100vh - 64px);
         }
 
         .sidebar.mobile-hidden {
@@ -261,57 +189,7 @@
             border-color: var(--accent-primary);
         }
 
-        .google-user-info {
-            padding: 1rem;
-            border-top: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .google-user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-        }
-
-        .google-user-details {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .google-user-name {
-            font-size: 0.9rem;
-            font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .google-user-email {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .google-sign-out-btn {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            padding: 0.5rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s ease;
-        }
-
-        .google-sign-out-btn:hover {
-            border-color: var(--accent-red);
-            color: var(--accent-red);
-        }
-
+        /* Main Content */
         .main-content {
             margin-left: 260px;
             flex: 1;
@@ -359,12 +237,15 @@
             box-shadow: 0 8px 20px var(--shadow);
         }
 
-        .desktop-text {
-            display: inline;
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
         }
 
-        .mobile-text {
-            display: none;
+        .btn-outline:hover {
+            border-color: var(--accent-primary);
+            background: rgba(99, 102, 241, 0.1);
         }
 
         .content-area {
@@ -381,6 +262,566 @@
             display: block;
         }
 
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .widget {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .widget:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .widget-1 { grid-column: span 3; }
+        .widget-2 { grid-column: span 3; }
+        .widget-3 { grid-column: span 3; }
+        .widget-4 { grid-column: span 3; }
+        .widget-calendar { grid-column: span 8; }
+        .widget-sidebar { grid-column: span 4; }
+
+        .widget-title {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .widget-value {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'Manrope', sans-serif;
+            margin-bottom: 0.5rem;
+        }
+
+        .widget-change {
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .widget-change.positive { color: var(--accent-green); }
+        .widget-change.negative { color: var(--accent-red); }
+
+        /* Calendar */
+        .calendar {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .calendar-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .calendar-nav button {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
+        }
+
+        .calendar-nav button:hover {
+            border-color: var(--accent-primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            padding: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .calendar-day:hover {
+            border-color: var(--accent-primary);
+            transform: scale(1.05);
+        }
+
+        .calendar-day.today {
+            border: 2px solid var(--accent-primary);
+        }
+
+        .calendar-day.has-trades {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+        }
+
+        .calendar-day.profit {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(34, 197, 94, 0.1));
+            border-color: var(--accent-green);
+        }
+
+        .calendar-day.loss {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(248, 113, 113, 0.1));
+            border-color: var(--accent-red);
+        }
+
+        .calendar-day-number {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .calendar-day.has-trades .calendar-day-number {
+            color: var(--text-primary);
+        }
+
+        .calendar-day-pnl {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 0.25rem;
+        }
+
+        .calendar-day-trades {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        /* Weekly Summary Sidebar */
+        .weekly-summary {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .week-item {
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .week-item:hover {
+            border-color: var(--accent-primary);
+        }
+
+        .week-item.active {
+            border-color: var(--accent-primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .week-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .week-pnl {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Manrope', sans-serif;
+            margin-bottom: 0.25rem;
+        }
+
+        .week-stats {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Trades List */
+        .trades-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .trades-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .filter-pills {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-pill {
+            padding: 0.5rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .filter-pill:hover {
+            border-color: var(--accent-primary);
+            color: var(--text-primary);
+        }
+
+        .filter-pill.active {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            border-color: transparent;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--bg-secondary);
+        }
+
+        th {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            font-weight: 700;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.95rem;
+        }
+
+        tbody tr {
+            transition: background 0.15s ease;
+        }
+
+        tbody tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        .trade-type-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .trade-type-badge.long {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-green);
+        }
+
+        .trade-type-badge.short {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--accent-red);
+        }
+
+        .pnl-value {
+            font-weight: 700;
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .pnl-value.positive { color: var(--accent-green); }
+        .pnl-value.negative { color: var(--accent-red); }
+
+        /* Trade Form Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select, textarea {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        /* Stats View */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .stat-card-title {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .comparison-boxes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .comparison-box {
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .comparison-box.long {
+            border-color: var(--accent-green);
+        }
+
+        .comparison-box.short {
+            border-color: var(--accent-red);
+        }
+
+        .comparison-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .comparison-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            font-family: 'Manrope', sans-serif;
+            margin-bottom: 0.5rem;
+        }
+
+        .comparison-stats {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .day-performance {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .day-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .day-name {
+            min-width: 80px;
+            font-weight: 600;
+        }
+
+        .day-bar-container {
+            flex: 1;
+            height: 10px;
+            background: var(--bg-secondary);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .day-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        .day-value {
+            min-width: 100px;
+            text-align: right;
+            font-weight: 700;
+            font-family: 'Manrope', sans-serif;
+        }
+
         .empty-state {
             text-align: center;
             padding: 4rem 2rem;
@@ -391,6 +832,92 @@
             font-size: 4rem;
             margin-bottom: 1rem;
             opacity: 0.3;
+        }
+
+        /* Account Modal */
+        .account-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .account-item {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .account-item:hover {
+            border-color: var(--accent-primary);
+        }
+
+        .account-item.active {
+            border-color: var(--accent-primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .account-info h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .account-info p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .account-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Manrope', sans-serif;
+        }
+
+        @media (max-width: 1400px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(12, 1fr);
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .widget-1, .widget-2, .widget-3, .widget-4 {
+                grid-column: span 6;
+            }
+            .widget-calendar {
+                grid-column: span 12;
+            }
+            .widget-sidebar {
+                grid-column: span 12;
+            }
+
+            .comparison-boxes {
+                gap: 0.75rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 260px;
+            }
+
+            .widget-1, .widget-2, .widget-3, .widget-4 {
+                grid-column: span 6;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            th, td {
+                padding: 0.875rem 1rem;
+                font-size: 0.9rem;
+            }
         }
 
         @media (max-width: 768px) {
@@ -413,61 +940,311 @@
 
             .main-content {
                 margin-left: 0;
+                width: 100%;
             }
 
             .mobile-menu-btn {
                 display: flex;
             }
 
-            .google-banner {
-                padding: 0.75rem 1rem;
-                flex-direction: column;
+            .top-bar {
+                padding: 1rem;
+                flex-wrap: wrap;
                 gap: 0.75rem;
             }
 
-            .google-banner-text {
-                font-size: 0.9rem;
+            .page-title {
+                font-size: 1.25rem;
             }
 
-            .google-sign-in-btn {
+            .top-actions {
+                gap: 0.5rem;
+            }
+
+            .btn {
                 padding: 0.65rem 1.25rem;
                 font-size: 0.9rem;
+                white-space: nowrap;
             }
 
-            .sync-status {
-                top: auto;
-                bottom: 1rem;
-                right: 1rem;
+            .content-area {
+                padding: 1rem;
+            }
+
+            .dashboard-grid {
+                gap: 1rem;
+            }
+
+            .widget-1, .widget-2, .widget-3, .widget-4 {
+                grid-column: span 12;
+            }
+
+            .widget {
+                padding: 1.25rem;
+            }
+
+            .widget-value {
+                font-size: 1.75rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 0.875rem;
+            }
+
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+
+            .calendar {
+                padding: 1rem;
+            }
+
+            .calendar-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .calendar-title {
+                font-size: 1.1rem;
+            }
+
+            .calendar-grid {
+                gap: 0.35rem;
+            }
+
+            .calendar-day {
+                padding: 0.35rem;
+                font-size: 0.85rem;
+                min-height: 60px;
+            }
+
+            .calendar-day-number {
+                font-size: 0.85rem;
+            }
+
+            .calendar-day-pnl {
+                font-size: 0.7rem;
+            }
+
+            .calendar-day-trades {
+                font-size: 0.65rem;
+            }
+
+            .weekly-summary {
+                padding: 1rem;
+            }
+
+            .week-item {
+                padding: 0.875rem;
+            }
+
+            .week-pnl {
+                font-size: 1.35rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .stat-card {
+                padding: 1.25rem;
+            }
+
+            .comparison-boxes {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
+            .comparison-value {
+                font-size: 1.5rem;
+            }
+
+            .day-performance {
+                gap: 0.75rem;
+            }
+
+            .day-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+            }
+
+            .day-name {
+                min-width: auto;
+            }
+
+            .day-value {
+                text-align: left;
+            }
+
+            .trades-container {
+                overflow-x: auto;
+            }
+
+            .trades-header {
+                padding: 1rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .filter-pills {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                width: 100%;
+                padding-bottom: 0.5rem;
+            }
+
+            .filter-pill {
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+
+            table {
+                font-size: 0.85rem;
+                min-width: 800px;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+
+            .trade-type-badge {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.6rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                max-width: 95vw;
+                padding: 1.5rem;
+                max-height: 85vh;
+            }
+
+            .modal-header {
+                margin-bottom: 1.5rem;
+            }
+
+            .modal-title {
+                font-size: 1.25rem;
+            }
+
+            .account-list {
+                gap: 0.5rem;
+            }
+
+            .account-item {
+                padding: 0.875rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .account-value {
+                font-size: 1.35rem;
+                align-self: flex-end;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 1.25rem;
+                padding: 1.25rem;
+            }
+
+            .page-title {
+                font-size: 1.1rem;
+            }
+
+            .btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .widget-value {
+                font-size: 1.5rem;
+            }
+
+            .widget-title {
+                font-size: 0.75rem;
+            }
+
+            .calendar-day {
+                min-height: 50px;
+                padding: 0.25rem;
+            }
+
+            .calendar-day-number {
+                font-size: 0.75rem;
+            }
+
+            .calendar-day-pnl {
+                font-size: 0.65rem;
+            }
+
+            .calendar-day-trades {
+                font-size: 0.6rem;
+                display: none;
+            }
+
+            .week-pnl {
+                font-size: 1.25rem;
+            }
+
+            .comparison-value {
+                font-size: 1.35rem;
+            }
+
+            table {
                 font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 0.65rem 0.4rem;
+            }
+
+            .modal-content {
+                padding: 1.25rem;
+            }
+
+            .form-grid {
+                gap: 0.75rem;
+            }
+
+            input, select, textarea {
+                padding: 0.65rem 0.875rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .content-area {
+                padding: 0.75rem;
+            }
+
+            .widget {
+                padding: 1rem;
+            }
+
+            .calendar {
+                padding: 0.75rem;
+            }
+
+            .calendar-grid {
+                gap: 0.25rem;
+            }
+
+            .calendar-day {
+                min-height: 45px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Google Sign-In Banner -->
-    <div class="google-banner" id="googleBanner">
-        <div class="google-banner-text">
-            <span>🔒</span>
-            <span>Connectez-vous avec Google pour synchroniser vos données sur tous vos appareils</span>
-        </div>
-        <button class="google-sign-in-btn" id="googleSignInBtn">
-            <svg width="18" height="18" viewBox="0 0 18 18">
-                <path fill="#4285F4" d="M17.64,9.2c0-0.637-0.057-1.251-0.164-1.84H9v3.481h4.844c-0.209,1.125-0.843,2.078-1.796,2.717v2.258h2.908C16.658,14.137,17.64,11.848,17.64,9.2z"/>
-                <path fill="#34A853" d="M9,18c2.43,0,4.467-0.806,5.956-2.184l-2.908-2.258c-0.806,0.54-1.837,0.86-3.048,0.86c-2.344,0-4.328-1.584-5.036-3.711H0.957v2.332C2.438,15.983,5.482,18,9,18z"/>
-                <path fill="#FBBC05" d="M3.964,10.707c-0.180-0.54-0.282-1.117-0.282-1.707s0.102-1.167,0.282-1.707V4.961H0.957C0.347,6.175,0,7.55,0,9s0.348,2.825,0.957,4.039L3.964,10.707z"/>
-                <path fill="#EA4335" d="M9,3.582c1.321,0,2.508,0.454,3.44,1.345l2.582-2.582C13.463,0.891,11.426,0,9,0C5.482,0,2.438,2.017,0.957,4.961l3.007,2.332C4.672,5.163,6.656,3.582,9,3.582z"/>
-            </svg>
-            Se connecter avec Google
-        </button>
-    </div>
-
-    <!-- Sync Status Indicator -->
-    <div class="sync-status" id="syncStatus">
-        <div class="sync-icon"></div>
-        <span id="syncStatusText">Synchronisation...</span>
-    </div>
-
-    <div class="app-container" id="appContainer">
+    <div class="app-container">
         <!-- Mobile Overlay -->
         <div class="mobile-overlay" id="mobileOverlay" onclick="journal.closeMobileMenu()"></div>
 
@@ -495,6 +1272,18 @@
                         <span>Stats Globales</span>
                     </div>
                 </div>
+
+                <div class="menu-section">
+                    <div class="menu-label">Outils</div>
+                    <div class="menu-item" data-view="journal">
+                        <span class="menu-icon">📝</span>
+                        <span>Journal</span>
+                    </div>
+                    <div class="menu-item" data-view="playbook">
+                        <span class="menu-icon">📚</span>
+                        <span>Playbook</span>
+                    </div>
+                </div>
             </nav>
 
             <div class="account-selector">
@@ -503,86 +1292,441 @@
                     <span>▼</span>
                 </button>
             </div>
-
-            <!-- Google User Info (shown when signed in) -->
-            <div class="google-user-info" id="googleUserInfo" style="display: none;">
-                <img id="googleUserAvatar" class="google-user-avatar" src="" alt="">
-                <div class="google-user-details">
-                    <div class="google-user-name" id="googleUserName"></div>
-                    <div class="google-user-email" id="googleUserEmail"></div>
-                </div>
-                <button class="google-sign-out-btn" onclick="journal.signOut()" title="Déconnexion">⏏</button>
-            </div>
         </aside>
 
         <!-- Main Content -->
         <main class="main-content">
+            <!-- Top Bar -->
             <div class="top-bar">
                 <div style="display: flex; align-items: center; gap: 1rem;">
                     <button class="mobile-menu-btn" onclick="journal.toggleMobileMenu()">☰</button>
                     <h1 class="page-title" id="pageTitle">Dashboard</h1>
                 </div>
                 <div class="top-actions">
+                    <button class="btn btn-outline" onclick="journal.toggleTheme()" style="padding: 0.75rem; min-width: auto;" title="Changer de thème">
+                        <span id="themeIcon">🌙</span>
+                    </button>
                     <button class="btn" onclick="journal.openTradeModal()">
                         <span class="desktop-text">+ Nouveau Trade</span>
-                        <span class="mobile-text">+ Trade</span>
+                        <span class="mobile-text" style="display: none;">+ Trade</span>
                     </button>
                 </div>
             </div>
 
+            <!-- Content Area -->
             <div class="content-area">
                 <!-- Dashboard View -->
                 <div id="dashboard" class="view active">
-                    <div class="empty-state">
-                        <div class="empty-icon">⚡</div>
-                        <h2 style="font-size: 1.5rem; margin-bottom: 1rem;">TradeZilla Pro avec Google Drive</h2>
-                        <p>Connectez-vous avec Google pour commencer à synchroniser vos trades</p>
+                    <!-- Widgets -->
+                    <div class="dashboard-grid">
+                        <div class="widget widget-1">
+                            <div class="widget-title">Capital Actuel</div>
+                            <div class="widget-value" id="widgetCapital">50 000€</div>
+                            <div class="widget-change positive" id="widgetCapitalChange">
+                                <span>▲</span>
+                                <span>+0%</span>
+                            </div>
+                        </div>
+
+                        <div class="widget widget-2">
+                            <div class="widget-title">P&L Total</div>
+                            <div class="widget-value" id="widgetPnL">0€</div>
+                            <div class="widget-change" id="widgetPnLChange">
+                                <span>●</span>
+                                <span>0 trades</span>
+                            </div>
+                        </div>
+
+                        <div class="widget widget-3">
+                            <div class="widget-title">Win Rate</div>
+                            <div class="widget-value" id="widgetWinRate">0%</div>
+                            <div class="widget-change" id="widgetWinRateChange">
+                                <span>○</span>
+                                <span>0W / 0L</span>
+                            </div>
+                        </div>
+
+                        <div class="widget widget-4">
+                            <div class="widget-title">P&L Mensuel</div>
+                            <div class="widget-value" id="widgetMonthlyPnL">0€</div>
+                            <div class="widget-change" id="widgetMonthlyProgress">
+                                <span>◐</span>
+                                <span>0%</span>
+                            </div>
+                        </div>
+
+                        <!-- Calendar -->
+                        <div class="widget-calendar">
+                            <div class="calendar">
+                                <div class="calendar-header">
+                                    <h2 class="calendar-title" id="calendarMonth">Janvier 2025</h2>
+                                    <div class="calendar-nav">
+                                        <button onclick="journal.previousMonth()">◀</button>
+                                        <button onclick="journal.nextMonth()">▶</button>
+                                    </div>
+                                </div>
+                                <div class="calendar-grid" id="calendarGrid">
+                                    <!-- Generated by JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Weekly Sidebar -->
+                        <div class="widget-sidebar">
+                            <div class="weekly-summary">
+                                <div class="widget-title">Semaines</div>
+                                <div id="weeksSummary">
+                                    <!-- Generated by JS -->
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Trades View -->
                 <div id="trades" class="view">
-                    <div class="empty-state">
-                        <div class="empty-icon">💼</div>
-                        <h3>Liste des Trades</h3>
-                        <p>Connectez-vous pour voir vos trades</p>
+                    <div class="trades-container">
+                        <div class="trades-header">
+                            <h2 class="calendar-title">Historique des Trades</h2>
+                            <div class="filter-pills">
+                                <button class="filter-pill active" data-filter="all">Tous</button>
+                                <button class="filter-pill" data-filter="month">Ce Mois</button>
+                                <button class="filter-pill" data-filter="week">Semaine</button>
+                                <button class="filter-pill" data-filter="wins">Gains</button>
+                                <button class="filter-pill" data-filter="losses">Pertes</button>
+                            </div>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Instrument</th>
+                                    <th>Type</th>
+                                    <th>Taille</th>
+                                    <th>P&L</th>
+                                    <th>% Capital</th>
+                                    <th>Stratégie</th>
+                                    <th>Chart</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tradesTableBody">
+                                <tr>
+                                    <td colspan="9" class="empty-state">
+                                        <div class="empty-icon">📊</div>
+                                        <div>Aucun trade enregistré</div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
                 <!-- Statistics View -->
                 <div id="statistics" class="view">
-                    <div class="empty-state">
-                        <div class="empty-icon">📈</div>
-                        <h3>Statistiques du Compte</h3>
-                        <p>Connectez-vous pour voir vos statistiques</p>
+                    <h2 class="calendar-title" style="margin-bottom: 1.5rem;">Statistiques - <span id="statsAccountName"></span></h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-card-title">Performance par Jour</div>
+                            <div class="day-performance" id="dayPerformance">
+                                <!-- Generated by JS -->
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-card-title">Long vs Short</div>
+                            <div class="comparison-boxes">
+                                <div class="comparison-box long">
+                                    <div class="comparison-label">LONG</div>
+                                    <div class="comparison-value" id="statsLongPnL">0€</div>
+                                    <div class="comparison-stats" id="statsLongInfo">0 trades | 0% WR</div>
+                                </div>
+                                <div class="comparison-box short">
+                                    <div class="comparison-label">SHORT</div>
+                                    <div class="comparison-value" id="statsShortPnL">0€</div>
+                                    <div class="comparison-stats" id="statsShortInfo">0 trades | 0% WR</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-card-title">Respect de la Stratégie</div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 3rem; font-weight: 700; font-family: 'Manrope', sans-serif; margin-bottom: 0.5rem;" id="statsStrategyPercent">0%</div>
+                                <div style="color: var(--text-secondary); margin-bottom: 1.5rem;" id="statsStrategyDetails">0 / 0 trades</div>
+                                <div style="padding-top: 1.5rem; border-top: 1px solid var(--border);">
+                                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Avec stratégie:</div>
+                                    <div id="statsWithStrategy" style="font-weight: 700; margin-bottom: 1rem;">-</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Sans stratégie:</div>
+                                    <div id="statsWithoutStrategy" style="font-weight: 700;">-</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-card-title">Meilleurs Instruments</div>
+                            <div id="statsBestInstruments" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                <!-- Generated by JS -->
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Global Stats View -->
                 <div id="globalStats" class="view">
+                    <h2 class="calendar-title" style="margin-bottom: 1.5rem;">Statistiques Globales - Tous Comptes</h2>
+                    
+                    <!-- Global Summary -->
+                    <div class="dashboard-grid" style="margin-bottom: 2rem;">
+                        <div class="widget widget-1">
+                            <div class="widget-title">Capital Total</div>
+                            <div class="widget-value" id="globalCapitalWidget">0€</div>
+                            <div class="widget-change" id="globalAccountsCount">
+                                <span>●</span>
+                                <span>0 comptes</span>
+                            </div>
+                        </div>
+
+                        <div class="widget widget-2">
+                            <div class="widget-title">P&L Total</div>
+                            <div class="widget-value" id="globalPnLWidget">0€</div>
+                            <div class="widget-change" id="globalTradesCount">
+                                <span>●</span>
+                                <span>0 trades</span>
+                            </div>
+                        </div>
+
+                        <div class="widget widget-3">
+                            <div class="widget-title">Win Rate Global</div>
+                            <div class="widget-value" id="globalWinRateWidget">0%</div>
+                            <div class="widget-change" id="globalWinRateDetails">
+                                <span>○</span>
+                                <span>0W / 0L</span>
+                            </div>
+                        </div>
+
+                        <div class="widget widget-4">
+                            <div class="widget-title">Meilleur Compte</div>
+                            <div class="widget-value" id="globalBestAccount" style="font-size: 1.3rem;">-</div>
+                            <div class="widget-change positive" id="globalBestAccountPnL">
+                                <span>▲</span>
+                                <span>0€</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-card-title">Performance par Jour (Global)</div>
+                            <div class="day-performance" id="globalDayPerformance">
+                                <!-- Generated by JS -->
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-card-title">Long vs Short (Global)</div>
+                            <div class="comparison-boxes">
+                                <div class="comparison-box long">
+                                    <div class="comparison-label">LONG</div>
+                                    <div class="comparison-value" id="globalLongPnL">0€</div>
+                                    <div class="comparison-stats" id="globalLongInfo">0 trades | 0% WR</div>
+                                </div>
+                                <div class="comparison-box short">
+                                    <div class="comparison-label">SHORT</div>
+                                    <div class="comparison-value" id="globalShortPnL">0€</div>
+                                    <div class="comparison-stats" id="globalShortInfo">0 trades | 0% WR</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-card-title">Respect de la Stratégie (Global)</div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 3rem; font-weight: 700; font-family: 'Manrope', sans-serif; margin-bottom: 0.5rem;" id="globalStrategyPercent">0%</div>
+                                <div style="color: var(--text-secondary); margin-bottom: 1.5rem;" id="globalStrategyDetails">0 / 0 trades</div>
+                                <div style="padding-top: 1.5rem; border-top: 1px solid var(--border);">
+                                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Avec stratégie:</div>
+                                    <div id="globalWithStrategy" style="font-weight: 700; margin-bottom: 1rem;">-</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Sans stratégie:</div>
+                                    <div id="globalWithoutStrategy" style="font-weight: 700;">-</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-card-title">Meilleurs Instruments (Global)</div>
+                            <div id="globalBestInstruments" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                <!-- Generated by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Accounts Comparison -->
+                    <div style="margin-top: 2rem;">
+                        <h2 class="calendar-title" style="margin-bottom: 1.5rem;">Comparaison des Comptes</h2>
+                        <div id="accountsComparison" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem;">
+                            <!-- Generated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Journal View (placeholder) -->
+                <div id="journal" class="view">
                     <div class="empty-state">
-                        <div class="empty-icon">🌍</div>
-                        <h3>Statistiques Globales</h3>
-                        <p>Connectez-vous pour voir vos statistiques globales</p>
+                        <div class="empty-icon">📝</div>
+                        <h3>Journal de Trading</h3>
+                        <p>Fonctionnalité à venir...</p>
+                    </div>
+                </div>
+
+                <!-- Playbook View (placeholder) -->
+                <div id="playbook" class="view">
+                    <div class="empty-state">
+                        <div class="empty-icon">📚</div>
+                        <h3>Playbook</h3>
+                        <p>Fonctionnalité à venir...</p>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script>
-        // Configuration Google OAuth (SANS API KEY - plus sécurisé pour GitHub)
-        const GOOGLE_CLIENT_ID = '5328933201-hhed8j3flifhdf4229sfof4247hugd1h.apps.googleusercontent.com';
-        const GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
-        const TRADEZILLA_FILENAME = 'tradezilla-data.json';
+    <!-- Trade Modal -->
+    <div id="tradeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Nouveau Trade</h2>
+                <button class="modal-close" onclick="journal.closeTradeModal()">×</button>
+            </div>
+            <form id="tradeForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="tradeDate">Date</label>
+                        <input type="date" id="tradeDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="instrument">Instrument</label>
+                        <select id="instrument" required>
+                            <option value="">Sélectionner...</option>
+                            <optgroup label="Indices US">
+                                <option value="NASDAQ/MNQ">NASDAQ / MNQ</option>
+                                <option value="SP500/MES">SP500 / MES</option>
+                                <option value="DOWJONES/MYM">DOWJONES / MYM</option>
+                            </optgroup>
+                            <optgroup label="Forex Majeurs">
+                                <option value="EUR/USD">EUR/USD</option>
+                                <option value="GBP/USD">GBP/USD</option>
+                                <option value="USD/JPY">USD/JPY</option>
+                                <option value="USD/CHF">USD/CHF</option>
+                                <option value="AUD/USD">AUD/USD</option>
+                                <option value="NZD/USD">NZD/USD</option>
+                                <option value="USD/CAD">USD/CAD</option>
+                            </optgroup>
+                            <optgroup label="Forex Mineurs">
+                                <option value="EUR/GBP">EUR/GBP</option>
+                                <option value="EUR/JPY">EUR/JPY</option>
+                                <option value="GBP/JPY">GBP/JPY</option>
+                                <option value="EUR/AUD">EUR/AUD</option>
+                                <option value="EUR/CAD">EUR/CAD</option>
+                                <option value="GBP/AUD">GBP/AUD</option>
+                            </optgroup>
+                            <optgroup label="Crypto">
+                                <option value="BTC/USD">BTC/USD</option>
+                                <option value="ETH/USD">ETH/USD</option>
+                                <option value="SOL/USD">SOL/USD</option>
+                                <option value="XRP/USD">XRP/USD</option>
+                            </optgroup>
+                            <optgroup label="Matières Premières">
+                                <option value="GOLD/XAU">GOLD / XAU</option>
+                                <option value="SILVER/XAG">SILVER / XAG</option>
+                                <option value="OIL/WTI">OIL / WTI</option>
+                                <option value="OIL/BRENT">OIL / BRENT</option>
+                            </optgroup>
+                            <option value="AUTRE">Autre (personnalisé)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="customInstrumentGroup" style="display: none;">
+                        <label for="customInstrument">Instrument personnalisé</label>
+                        <input type="text" id="customInstrument" placeholder="Ex: EUR/GBP">
+                    </div>
+                    <div class="form-group">
+                        <label for="tradeType">Type</label>
+                        <select id="tradeType" required>
+                            <option value="LONG">LONG</option>
+                            <option value="SHORT">SHORT</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="pnl">P&L (€)</label>
+                        <input type="number" id="pnl" step="0.01" placeholder="125.50" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="positionSize">Taille (lots)</label>
+                        <input type="number" id="positionSize" step="0.01" placeholder="1.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tradingViewLink">Lien TradingView</label>
+                        <input type="url" id="tradingViewLink" placeholder="https://...">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="notes">Notes</label>
+                        <textarea id="notes" placeholder="Setup, émotions, observations..."></textarea>
+                    </div>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="followedStrategy">
+                    <label for="followedStrategy">J'ai suivi ma stratégie</label>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Ajouter le Trade</button>
+            </form>
+        </div>
+    </div>
 
+    <!-- Account Modal -->
+    <div id="accountModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Mes Comptes</h2>
+                <button class="modal-close" onclick="journal.closeAccountModal()">×</button>
+            </div>
+            <div class="account-list" id="accountList">
+                <!-- Generated by JS -->
+            </div>
+            <button class="btn btn-outline" onclick="journal.showAddAccountForm()" style="width: 100%;">+ Nouveau Compte</button>
+            
+            <div id="addAccountForm" style="display: none; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+                <form id="accountForm">
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label for="accountName">Nom du Compte</label>
+                        <input type="text" id="accountName" placeholder="Compte Principal" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label for="propFirm">Prop Firm / Broker</label>
+                        <input type="text" id="propFirm" placeholder="FTMO, MyForexFunds..." required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label for="accountCapital">Capital (€)</label>
+                        <input type="number" id="accountCapital" placeholder="50000" required>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <button type="submit" class="btn" style="flex: 1;">Créer</button>
+                        <button type="button" class="btn btn-outline" onclick="journal.hideAddAccountForm()" style="flex: 1;">Annuler</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
         class TradingJournal {
             constructor() {
                 this.accessToken = null;
                 this.googleUser = null;
                 this.driveFileId = null;
+                this.currentTheme = localStorage.getItem('theme') || 'dark';
                 this.currentView = 'dashboard';
+                this.currentMonth = new Date();
+                this.currentFilter = 'all';
                 this.settings = this.loadSettings();
                 this.accounts = this.loadAccounts();
                 this.currentAccountId = this.loadCurrentAccountId();
@@ -590,258 +1734,15 @@
                 this.init();
             }
 
-            async init() {
+            init() {
                 if (this.accounts.length === 0) {
                     this.createDefaultAccount();
                 }
+                this.applyTheme();
                 this.setupEventListeners();
-                
-                // Check if user was previously signed in
-                const savedToken = localStorage.getItem('google_access_token');
-                const savedUser = localStorage.getItem('google_user');
-                
-                if (savedToken && savedUser) {
-                    this.accessToken = savedToken;
-                    this.googleUser = JSON.parse(savedUser);
-                    this.updateGoogleUI(true);
-                    await this.loadFromDrive();
-                }
-                
+                this.initGoogleDrive();
                 this.updateAllDisplays();
-            }
-
-            setupEventListeners() {
-                // Google Sign In
-                document.getElementById('googleSignInBtn').addEventListener('click', () => {
-                    this.signInWithGoogle();
-                });
-
-                // Menu navigation
-                document.querySelectorAll('.menu-item').forEach(item => {
-                    item.addEventListener('click', (e) => {
-                        const view = e.currentTarget.dataset.view;
-                        this.switchView(view);
-                    });
-                });
-            }
-
-            async signInWithGoogle() {
-                try {
-                    const client = google.accounts.oauth2.initTokenClient({
-                        client_id: GOOGLE_CLIENT_ID,
-                        scope: GOOGLE_DRIVE_SCOPE,
-                        callback: async (response) => {
-                            if (response.access_token) {
-                                this.accessToken = response.access_token;
-                                localStorage.setItem('google_access_token', response.access_token);
-                                
-                                // Get user info
-                                const userInfo = await this.getUserInfo(response.access_token);
-                                this.googleUser = userInfo;
-                                localStorage.setItem('google_user', JSON.stringify(userInfo));
-                                
-                                this.updateGoogleUI(true);
-                                
-                                // Load data from Drive
-                                await this.loadFromDrive();
-                                this.showSyncStatus('✅ Connecté et synchronisé', 'success');
-                            }
-                        },
-                    });
-                    client.requestAccessToken();
-                } catch (error) {
-                    console.error('Erreur connexion Google:', error);
-                    this.showSyncStatus('❌ Erreur de connexion', 'error');
-                }
-            }
-
-            async getUserInfo(accessToken) {
-                const response = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-                    headers: { Authorization: `Bearer ${accessToken}` }
-                });
-                return await response.json();
-            }
-
-            updateGoogleUI(signedIn) {
-                const banner = document.getElementById('googleBanner');
-                const userInfo = document.getElementById('googleUserInfo');
-                const appContainer = document.getElementById('appContainer');
-                const sidebar = document.getElementById('sidebar');
-
-                if (signedIn && this.googleUser) {
-                    banner.classList.add('hidden');
-                    userInfo.style.display = 'flex';
-                    document.getElementById('googleUserName').textContent = this.googleUser.name;
-                    document.getElementById('googleUserEmail').textContent = this.googleUser.email;
-                    document.getElementById('googleUserAvatar').src = this.googleUser.picture;
-                    appContainer.classList.remove('with-banner');
-                    sidebar.classList.remove('with-banner');
-                } else {
-                    banner.classList.remove('hidden');
-                    userInfo.style.display = 'none';
-                    appContainer.classList.add('with-banner');
-                    sidebar.classList.add('with-banner');
-                }
-            }
-
-            async signOut() {
-                if (confirm('Êtes-vous sûr de vouloir vous déconnecter ? Vos données locales seront conservées.')) {
-                    localStorage.removeItem('google_access_token');
-                    localStorage.removeItem('google_user');
-                    this.accessToken = null;
-                    this.googleUser = null;
-                    this.driveFileId = null;
-                    this.updateGoogleUI(false);
-                    this.showSyncStatus('👋 Déconnecté', 'info');
-                }
-            }
-
-            async saveToDrive() {
-                try {
-                    if (!this.accessToken) {
-                        console.log('Pas connecté à Google Drive');
-                        return;
-                    }
-
-                    this.showSyncStatus('☁️ Synchronisation...', 'syncing');
-
-                    const data = {
-                        settings: this.settings,
-                        accounts: this.accounts,
-                        currentAccountId: this.currentAccountId,
-                        trades: this.trades,
-                        lastSync: new Date().toISOString()
-                    };
-
-                    const content = JSON.stringify(data, null, 2);
-                    const file = new Blob([content], { type: 'application/json' });
-
-                    // Check if file exists
-                    if (!this.driveFileId) {
-                        const searchResponse = await fetch(
-                            `https://www.googleapis.com/drive/v3/files?q=name='${TRADEZILLA_FILENAME}'+and+trashed=false&fields=files(id,name)`,
-                            {
-                                headers: { Authorization: `Bearer ${this.accessToken}` }
-                            }
-                        );
-                        const searchResult = await searchResponse.json();
-
-                        if (searchResult.files && searchResult.files.length > 0) {
-                            this.driveFileId = searchResult.files[0].id;
-                        }
-                    }
-
-                    const metadata = {
-                        name: TRADEZILLA_FILENAME,
-                        mimeType: 'application/json',
-                    };
-
-                    const form = new FormData();
-                    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-                    form.append('file', file);
-
-                    const url = this.driveFileId
-                        ? `https://www.googleapis.com/upload/drive/v3/files/${this.driveFileId}?uploadType=multipart`
-                        : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
-
-                    const method = this.driveFileId ? 'PATCH' : 'POST';
-
-                    const response = await fetch(url, {
-                        method: method,
-                        headers: { Authorization: `Bearer ${this.accessToken}` },
-                        body: form
-                    });
-
-                    const result = await response.json();
-                    this.driveFileId = result.id;
-
-                    this.showSyncStatus('✅ Synchronisé', 'success');
-                } catch (error) {
-                    console.error('Erreur sauvegarde Drive:', error);
-                    this.showSyncStatus('⚠️ Erreur de sync', 'error');
-                }
-            }
-
-            async loadFromDrive() {
-                try {
-                    if (!this.accessToken) return;
-
-                    this.showSyncStatus('⬇️ Chargement...', 'syncing');
-
-                    // Search for the file
-                    const searchResponse = await fetch(
-                        `https://www.googleapis.com/drive/v3/files?q=name='${TRADEZILLA_FILENAME}'+and+trashed=false&fields=files(id,name)`,
-                        {
-                            headers: { Authorization: `Bearer ${this.accessToken}` }
-                        }
-                    );
-                    const searchResult = await searchResponse.json();
-
-                    if (!searchResult.files || searchResult.files.length === 0) {
-                        this.showSyncStatus('ℹ️ Aucune donnée cloud', 'info');
-                        return;
-                    }
-
-                    this.driveFileId = searchResult.files[0].id;
-
-                    // Download file content
-                    const fileResponse = await fetch(
-                        `https://www.googleapis.com/drive/v3/files/${this.driveFileId}?alt=media`,
-                        {
-                            headers: { Authorization: `Bearer ${this.accessToken}` }
-                        }
-                    );
-                    const data = await fileResponse.json();
-
-                    // Restore data
-                    if (data.settings) this.settings = data.settings;
-                    if (data.accounts) this.accounts = data.accounts;
-                    if (data.currentAccountId) this.currentAccountId = data.currentAccountId;
-                    if (data.trades) this.trades = data.trades;
-
-                    // Save to localStorage as backup
-                    this.saveSettings();
-                    this.saveAccounts();
-                    this.saveCurrentAccountId();
-                    this.saveTrades();
-
-                    this.updateAllDisplays();
-                    this.showSyncStatus('✅ Chargé depuis Drive', 'success');
-                } catch (error) {
-                    console.error('Erreur chargement Drive:', error);
-                    this.showSyncStatus('⚠️ Erreur chargement', 'error');
-                }
-            }
-
-            showSyncStatus(message, type) {
-                const statusEl = document.getElementById('syncStatus');
-                const textEl = document.getElementById('syncStatusText');
-                textEl.textContent = message;
-                statusEl.classList.add('show');
-
-                setTimeout(() => {
-                    statusEl.classList.remove('show');
-                }, 3000);
-            }
-
-            saveTrades() {
-                localStorage.setItem('tradeJournalTrades', JSON.stringify(this.trades));
-                this.saveToDrive();
-            }
-
-            saveAccounts() {
-                localStorage.setItem('tradeJournalAccounts', JSON.stringify(this.accounts));
-                this.saveToDrive();
-            }
-
-            saveSettings() {
-                localStorage.setItem('tradeJournalSettings', JSON.stringify(this.settings));
-                this.saveToDrive();
-            }
-
-            saveCurrentAccountId() {
-                localStorage.setItem('currentAccountId', this.currentAccountId);
-                this.saveToDrive();
+                document.getElementById('tradeDate').valueAsDate = new Date();
             }
 
             loadSettings() {
@@ -850,9 +1751,18 @@
                 return saved ? JSON.parse(saved) : defaultSettings;
             }
 
+            saveSettings() {
+                localStorage.setItem('tradeJournalSettings', JSON.stringify(this.settings));
+            }
+
             loadAccounts() {
                 const saved = localStorage.getItem('tradeJournalAccounts');
                 return saved ? JSON.parse(saved) : [];
+            }
+
+            saveAccounts() {
+                localStorage.setItem('tradeJournalAccounts', JSON.stringify(this.accounts));
+                this.saveToDrive();
             }
 
             loadCurrentAccountId() {
@@ -860,9 +1770,8 @@
                 return saved ? parseInt(saved) : null;
             }
 
-            loadTrades() {
-                const saved = localStorage.getItem('tradeJournalTrades');
-                return saved ? JSON.parse(saved) : [];
+            saveCurrentAccountId() {
+                localStorage.setItem('currentAccountId', this.currentAccountId);
             }
 
             createDefaultAccount() {
@@ -882,6 +1791,60 @@
                 return this.accounts.find(a => a.id === this.currentAccountId) || this.accounts[0];
             }
 
+            loadTrades() {
+                const saved = localStorage.getItem('tradeJournalTrades');
+                return saved ? JSON.parse(saved) : [];
+            }
+
+            saveTrades() {
+                localStorage.setItem('tradeJournalTrades', JSON.stringify(this.trades));
+                this.saveToDrive();
+            }
+
+            setupEventListeners() {
+                // Menu navigation
+                document.querySelectorAll('.menu-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        const view = e.currentTarget.dataset.view;
+                        this.switchView(view);
+                    });
+                });
+
+                // Instrument select change
+                document.getElementById('instrument').addEventListener('change', (e) => {
+                    const customGroup = document.getElementById('customInstrumentGroup');
+                    if (e.target.value === 'AUTRE') {
+                        customGroup.style.display = 'block';
+                        document.getElementById('customInstrument').required = true;
+                    } else {
+                        customGroup.style.display = 'none';
+                        document.getElementById('customInstrument').required = false;
+                    }
+                });
+
+                // Trade form
+                document.getElementById('tradeForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.addTrade();
+                });
+
+                // Account form
+                document.getElementById('accountForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.addAccount();
+                });
+
+                // Filter pills
+                document.querySelectorAll('.filter-pill').forEach(pill => {
+                    pill.addEventListener('click', (e) => {
+                        document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.currentFilter = e.target.dataset.filter;
+                        this.renderTrades();
+                    });
+                });
+            }
+
             switchView(viewName) {
                 this.currentView = viewName;
                 
@@ -896,9 +1859,18 @@
                     trades: 'Trades',
                     statistics: 'Statistiques',
                     globalStats: 'Statistiques Globales',
+                    journal: 'Journal',
+                    playbook: 'Playbook'
                 };
                 document.getElementById('pageTitle').textContent = titles[viewName];
 
+                if (viewName === 'statistics') {
+                    this.updateStatistics();
+                } else if (viewName === 'globalStats') {
+                    this.updateGlobalStatistics();
+                }
+
+                // Close mobile menu after navigation
                 this.closeMobileMenu();
             }
 
@@ -916,18 +1888,834 @@
                 overlay.classList.remove('active');
             }
 
-            openAccountModal() {
-                alert('Modal de gestion des comptes - À implémenter avec le reste du code');
+            openTradeModal() {
+                document.getElementById('tradeModal').classList.add('active');
             }
 
-            openTradeModal() {
-                alert('Modal d\'ajout de trade - À implémenter avec le reste du code');
+            closeTradeModal() {
+                document.getElementById('tradeModal').classList.remove('active');
+                document.getElementById('tradeForm').reset();
+                document.getElementById('customInstrumentGroup').style.display = 'none';
+                document.getElementById('customInstrument').required = false;
+            }
+
+            openAccountModal() {
+                this.renderAccountList();
+                document.getElementById('accountModal').classList.add('active');
+            }
+
+            closeAccountModal() {
+                document.getElementById('accountModal').classList.remove('active');
+                this.hideAddAccountForm();
+            }
+
+            showAddAccountForm() {
+                document.getElementById('addAccountForm').style.display = 'block';
+            }
+
+            hideAddAccountForm() {
+                document.getElementById('addAccountForm').style.display = 'none';
+                document.getElementById('accountForm').reset();
+            }
+
+            renderAccountList() {
+                const list = document.getElementById('accountList');
+                list.innerHTML = this.accounts.map(acc => {
+                    const accTrades = this.trades.filter(t => t.accountId === acc.id);
+                    const accPnL = accTrades.reduce((s, t) => s + t.pnl, 0);
+                    const accCapital = acc.baseCapital + accPnL;
+                    const isActive = acc.id === this.currentAccountId;
+
+                    return `
+                        <div class="account-item ${isActive ? 'active' : ''}" onclick="journal.selectAccount(${acc.id})">
+                            <div class="account-info">
+                                <h4>${acc.name}</h4>
+                                <p>🏢 ${acc.propFirm}</p>
+                            </div>
+                            <div class="account-value" style="color: ${accPnL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                                ${this.formatCurrency(accCapital)}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            selectAccount(id) {
+                this.currentAccountId = id;
+                this.saveCurrentAccountId();
+                const account = this.getCurrentAccount();
+                document.getElementById('currentAccountDisplay').textContent = account.name;
+                this.closeAccountModal();
+                this.updateAllDisplays();
+            }
+
+            addAccount() {
+                const account = {
+                    id: Date.now(),
+                    name: document.getElementById('accountName').value,
+                    propFirm: document.getElementById('propFirm').value,
+                    baseCapital: parseFloat(document.getElementById('accountCapital').value)
+                };
+
+                this.accounts.push(account);
+                this.saveAccounts();
+                this.hideAddAccountForm();
+                this.renderAccountList();
+            }
+
+            addTrade() {
+                let instrumentValue = document.getElementById('instrument').value;
+                
+                // If "AUTRE" is selected, use custom instrument
+                if (instrumentValue === 'AUTRE') {
+                    instrumentValue = document.getElementById('customInstrument').value.toUpperCase();
+                }
+
+                const trade = {
+                    id: Date.now(),
+                    accountId: this.currentAccountId,
+                    date: document.getElementById('tradeDate').value,
+                    instrument: instrumentValue,
+                    type: document.getElementById('tradeType').value,
+                    pnl: parseFloat(document.getElementById('pnl').value),
+                    size: parseFloat(document.getElementById('positionSize').value),
+                    tradingViewLink: document.getElementById('tradingViewLink').value,
+                    followedStrategy: document.getElementById('followedStrategy').checked,
+                    notes: document.getElementById('notes').value
+                };
+
+                const currentCapital = this.getCurrentCapital();
+                trade.pnlPercent = (trade.pnl / currentCapital) * 100;
+
+                this.trades.unshift(trade);
+                this.saveTrades();
+                this.closeTradeModal();
+                this.updateAllDisplays();
+            }
+
+            deleteTrade(id) {
+                if (confirm('Supprimer ce trade ?')) {
+                    this.trades = this.trades.filter(t => t.id !== id);
+                    this.saveTrades();
+                    this.updateAllDisplays();
+                }
+            }
+
+            getCurrentCapital() {
+                const account = this.getCurrentAccount();
+                const accountTrades = this.trades.filter(t => t.accountId === this.currentAccountId);
+                const totalPnL = accountTrades.reduce((sum, t) => sum + t.pnl, 0);
+                return account.baseCapital + totalPnL;
+            }
+
+            getAccountTrades() {
+                return this.trades.filter(t => t.accountId === this.currentAccountId);
+            }
+
+            previousMonth() {
+                this.currentMonth = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() - 1);
+                this.renderCalendar();
+            }
+
+            nextMonth() {
+                this.currentMonth = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() + 1);
+                this.renderCalendar();
+            }
+
+            renderCalendar() {
+                const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 
+                               'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+                
+                document.getElementById('calendarMonth').textContent = 
+                    `${months[this.currentMonth.getMonth()]} ${this.currentMonth.getFullYear()}`;
+
+                const firstDay = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth(), 1);
+                const lastDay = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() + 1, 0);
+                const daysInMonth = lastDay.getDate();
+                const startDay = firstDay.getDay();
+
+                const grid = document.getElementById('calendarGrid');
+                grid.innerHTML = '';
+
+                // Day headers
+                const dayNames = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+                dayNames.forEach(day => {
+                    const header = document.createElement('div');
+                    header.className = 'calendar-day-header';
+                    header.textContent = day;
+                    grid.appendChild(header);
+                });
+
+                // Empty cells before first day
+                for (let i = 0; i < startDay; i++) {
+                    grid.appendChild(document.createElement('div'));
+                }
+
+                // Days
+                const today = new Date();
+                const accountTrades = this.getAccountTrades();
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayDate = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth(), day);
+                    const dayTrades = accountTrades.filter(t => {
+                        const tradeDate = new Date(t.date);
+                        return tradeDate.toDateString() === dayDate.toDateString();
+                    });
+
+                    const dayPnL = dayTrades.reduce((sum, t) => sum + t.pnl, 0);
+                    
+                    const dayEl = document.createElement('div');
+                    dayEl.className = 'calendar-day';
+                    
+                    if (dayDate.toDateString() === today.toDateString()) {
+                        dayEl.classList.add('today');
+                    }
+                    
+                    if (dayTrades.length > 0) {
+                        dayEl.classList.add('has-trades');
+                        if (dayPnL > 0) dayEl.classList.add('profit');
+                        if (dayPnL < 0) dayEl.classList.add('loss');
+                    }
+
+                    dayEl.innerHTML = `
+                        <div class="calendar-day-number">${day}</div>
+                        ${dayTrades.length > 0 ? `
+                            <div class="calendar-day-pnl" style="color: ${dayPnL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                                ${dayPnL >= 0 ? '+' : ''}${dayPnL.toFixed(0)}€
+                            </div>
+                            <div class="calendar-day-trades">${dayTrades.length} trade${dayTrades.length > 1 ? 's' : ''}</div>
+                        ` : ''}
+                    `;
+
+                    grid.appendChild(dayEl);
+                }
+            }
+
+            renderWeeksSummary() {
+                const accountTrades = this.getAccountTrades();
+                const now = new Date();
+                const weeks = [];
+
+                for (let week = 1; week <= 4; week++) {
+                    const weekTrades = accountTrades.filter(t => {
+                        const tradeDate = new Date(t.date);
+                        return tradeDate.getMonth() === now.getMonth() &&
+                               tradeDate.getFullYear() === now.getFullYear() &&
+                               this.getWeekNumber(t.date) === week;
+                    });
+
+                    const weekPnL = weekTrades.reduce((sum, t) => sum + t.pnl, 0);
+                    const weekWins = weekTrades.filter(t => t.pnl > 0).length;
+                    
+                    weeks.push({
+                        number: week,
+                        pnl: weekPnL,
+                        trades: weekTrades.length,
+                        wins: weekWins
+                    });
+                }
+
+                const html = weeks.map(week => `
+                    <div class="week-item">
+                        <div class="week-label">Semaine ${week.number}</div>
+                        <div class="week-pnl" style="color: ${week.pnl >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                            ${week.pnl >= 0 ? '+' : ''}${this.formatCurrency(week.pnl)}
+                        </div>
+                        <div class="week-stats">${week.trades} trades · ${week.wins}W</div>
+                    </div>
+                `).join('');
+
+                document.getElementById('weeksSummary').innerHTML = html;
+            }
+
+            getWeekNumber(date) {
+                const d = new Date(date);
+                const firstDay = new Date(d.getFullYear(), d.getMonth(), 1);
+                const dayOfMonth = d.getDate();
+                return Math.ceil((dayOfMonth + firstDay.getDay()) / 7);
+            }
+
+            filterTrades() {
+                const now = new Date();
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const weekAgo = new Date(today);
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+                return this.getAccountTrades().filter(trade => {
+                    const tradeDate = new Date(trade.date);
+                    
+                    switch(this.currentFilter) {
+                        case 'month':
+                            return tradeDate >= monthStart;
+                        case 'week':
+                            return tradeDate >= weekAgo;
+                        case 'wins':
+                            return trade.pnl > 0;
+                        case 'losses':
+                            return trade.pnl < 0;
+                        default:
+                            return true;
+                    }
+                });
+            }
+
+            renderTrades() {
+                const tbody = document.getElementById('tradesTableBody');
+                const filteredTrades = this.filterTrades();
+
+                if (filteredTrades.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="9" class="empty-state">
+                                <div class="empty-icon">📊</div>
+                                <div>Aucun trade trouvé</div>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = filteredTrades.map(trade => `
+                    <tr>
+                        <td>${new Date(trade.date).toLocaleDateString('fr-FR')}</td>
+                        <td style="font-weight: 600;">${trade.instrument}</td>
+                        <td><span class="trade-type-badge ${trade.type.toLowerCase()}">${trade.type}</span></td>
+                        <td>${trade.size}</td>
+                        <td class="pnl-value ${trade.pnl >= 0 ? 'positive' : 'negative'}">
+                            ${trade.pnl >= 0 ? '+' : ''}${trade.pnl.toFixed(2)}€
+                        </td>
+                        <td style="color: ${trade.pnl >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                            ${trade.pnl >= 0 ? '+' : ''}${trade.pnlPercent.toFixed(2)}%
+                        </td>
+                        <td>${trade.followedStrategy ? '✅' : '❌'}</td>
+                        <td>
+                            ${trade.tradingViewLink ? 
+                                `<a href="${trade.tradingViewLink}" target="_blank" style="color: var(--accent-primary);">📈</a>` : 
+                                '-'}
+                        </td>
+                        <td>
+                            <button onclick="journal.deleteTrade(${trade.id})" style="background: var(--accent-red); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">×</button>
+                        </td>
+                    </tr>
+                `).join('');
             }
 
             updateAllDisplays() {
                 const account = this.getCurrentAccount();
-                if (account) {
-                    document.getElementById('currentAccountDisplay').textContent = account.name;
+                document.getElementById('currentAccountDisplay').textContent = account.name;
+                
+                this.updateWidgets();
+                this.renderCalendar();
+                this.renderWeeksSummary();
+                this.renderTrades();
+            }
+
+            updateWidgets() {
+                const account = this.getCurrentAccount();
+                const accountTrades = this.getAccountTrades();
+                const currentCapital = this.getCurrentCapital();
+                const totalPnL = accountTrades.reduce((sum, t) => sum + t.pnl, 0);
+                const capitalGrowth = ((currentCapital - account.baseCapital) / account.baseCapital) * 100;
+
+                const wins = accountTrades.filter(t => t.pnl > 0).length;
+                const losses = accountTrades.filter(t => t.pnl < 0).length;
+                const winRate = accountTrades.length > 0 ? (wins / accountTrades.length * 100).toFixed(1) : 0;
+
+                const now = new Date();
+                const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+                const monthlyTrades = accountTrades.filter(t => new Date(t.date) >= monthStart);
+                const monthlyPnL = monthlyTrades.reduce((sum, t) => sum + t.pnl, 0);
+                const monthlyGoal = account.baseCapital * (this.settings.monthlyGoal / 100);
+                const monthlyProgress = (monthlyPnL / monthlyGoal * 100).toFixed(1);
+
+                document.getElementById('widgetCapital').textContent = this.formatCurrency(currentCapital);
+                document.getElementById('widgetCapitalChange').innerHTML = `
+                    <span>${capitalGrowth >= 0 ? '▲' : '▼'}</span>
+                    <span>${capitalGrowth >= 0 ? '+' : ''}${capitalGrowth.toFixed(2)}%</span>
+                `;
+                document.getElementById('widgetCapitalChange').className = `widget-change ${capitalGrowth >= 0 ? 'positive' : 'negative'}`;
+
+                document.getElementById('widgetPnL').textContent = this.formatCurrency(totalPnL);
+                document.getElementById('widgetPnL').style.color = totalPnL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+                document.getElementById('widgetPnLChange').innerHTML = `
+                    <span>●</span>
+                    <span>${accountTrades.length} trades</span>
+                `;
+
+                document.getElementById('widgetWinRate').textContent = `${winRate}%`;
+                document.getElementById('widgetWinRate').style.color = winRate >= 50 ? 'var(--accent-green)' : 'var(--accent-red)';
+                document.getElementById('widgetWinRateChange').innerHTML = `
+                    <span>○</span>
+                    <span>${wins}W / ${losses}L</span>
+                `;
+
+                document.getElementById('widgetMonthlyPnL').textContent = this.formatCurrency(monthlyPnL);
+                document.getElementById('widgetMonthlyPnL').style.color = monthlyPnL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+                document.getElementById('widgetMonthlyProgress').innerHTML = `
+                    <span>◐</span>
+                    <span>${monthlyProgress}%</span>
+                `;
+            }
+
+            updateStatistics() {
+                const account = this.getCurrentAccount();
+                const accountTrades = this.getAccountTrades();
+
+                document.getElementById('statsAccountName').textContent = account.name;
+
+                // Day performance
+                const days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+                const dayPnL = {};
+                days.forEach(day => dayPnL[day] = 0);
+
+                accountTrades.forEach(trade => {
+                    const date = new Date(trade.date);
+                    const dayIndex = date.getDay();
+                    const dayName = days[dayIndex === 0 ? 6 : dayIndex - 1];
+                    dayPnL[dayName] += trade.pnl;
+                });
+
+                const maxPnL = Math.max(...Object.values(dayPnL), 1);
+
+                document.getElementById('dayPerformance').innerHTML = days.map(day => {
+                    const pnl = dayPnL[day];
+                    const percentage = (Math.abs(pnl) / maxPnL) * 100;
+                    return `
+                        <div class="day-row">
+                            <div class="day-name">${day}</div>
+                            <div class="day-bar-container">
+                                <div class="day-bar-fill" style="width: ${percentage}%"></div>
+                            </div>
+                            <div class="day-value" style="color: ${pnl >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                                ${pnl >= 0 ? '+' : ''}${pnl.toFixed(0)}€
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                // Long vs Short
+                const longTrades = accountTrades.filter(t => t.type === 'LONG');
+                const shortTrades = accountTrades.filter(t => t.type === 'SHORT');
+                
+                const longPnL = longTrades.reduce((sum, t) => sum + t.pnl, 0);
+                const shortPnL = shortTrades.reduce((sum, t) => sum + t.pnl, 0);
+                
+                const longWins = longTrades.filter(t => t.pnl > 0).length;
+                const shortWins = shortTrades.filter(t => t.pnl > 0).length;
+                
+                const longWR = longTrades.length > 0 ? (longWins / longTrades.length * 100).toFixed(0) : 0;
+                const shortWR = shortTrades.length > 0 ? (shortWins / shortTrades.length * 100).toFixed(0) : 0;
+
+                document.getElementById('statsLongPnL').textContent = this.formatCurrency(longPnL);
+                document.getElementById('statsLongPnL').style.color = longPnL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+                document.getElementById('statsLongInfo').textContent = `${longTrades.length} trades | ${longWR}% WR`;
+
+                document.getElementById('statsShortPnL').textContent = this.formatCurrency(shortPnL);
+                document.getElementById('statsShortPnL').style.color = shortPnL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+                document.getElementById('statsShortInfo').textContent = `${shortTrades.length} trades | ${shortWR}% WR`;
+
+                // Strategy adherence
+                const tradesWithStrategy = accountTrades.filter(t => t.followedStrategy);
+                const adherence = accountTrades.length > 0 ? (tradesWithStrategy.length / accountTrades.length * 100).toFixed(1) : 0;
+
+                document.getElementById('statsStrategyPercent').textContent = `${adherence}%`;
+                document.getElementById('statsStrategyPercent').style.color = adherence >= 70 ? 'var(--accent-green)' : 'var(--accent-red)';
+                document.getElementById('statsStrategyDetails').textContent = `${tradesWithStrategy.length} / ${accountTrades.length} trades`;
+
+                const withStrategyPnL = tradesWithStrategy.reduce((sum, t) => sum + t.pnl, 0);
+                const withStrategyWins = tradesWithStrategy.filter(t => t.pnl > 0).length;
+                const withStrategyWR = tradesWithStrategy.length > 0 ? (withStrategyWins / tradesWithStrategy.length * 100).toFixed(0) : 0;
+
+                const withoutStrategy = accountTrades.filter(t => !t.followedStrategy);
+                const withoutStrategyPnL = withoutStrategy.reduce((sum, t) => sum + t.pnl, 0);
+                const withoutStrategyWins = withoutStrategy.filter(t => t.pnl > 0).length;
+                const withoutStrategyWR = withoutStrategy.length > 0 ? (withoutStrategyWins / withoutStrategy.length * 100).toFixed(0) : 0;
+
+                document.getElementById('statsWithStrategy').innerHTML = `
+                    <span style="color: ${withStrategyPnL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}; font-size: 1.25rem; font-family: 'Manrope', sans-serif;">
+                        ${this.formatCurrency(withStrategyPnL)}
+                    </span> • ${withStrategyWR}% WR
+                `;
+
+                document.getElementById('statsWithoutStrategy').innerHTML = `
+                    <span style="color: ${withoutStrategyPnL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}; font-size: 1.25rem; font-family: 'Manrope', sans-serif;">
+                        ${this.formatCurrency(withoutStrategyPnL)}
+                    </span> • ${withoutStrategyWR}% WR
+                `;
+
+                // Best instruments
+                const instrumentPnL = {};
+                accountTrades.forEach(trade => {
+                    if (!instrumentPnL[trade.instrument]) {
+                        instrumentPnL[trade.instrument] = 0;
+                    }
+                    instrumentPnL[trade.instrument] += trade.pnl;
+                });
+
+                const sortedInstruments = Object.entries(instrumentPnL)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5);
+
+                document.getElementById('statsBestInstruments').innerHTML = sortedInstruments.length > 0 
+                    ? sortedInstruments.map(([instrument, pnl]) => `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--bg-secondary); border-radius: 8px;">
+                            <span style="font-weight: 600;">${instrument}</span>
+                            <span style="font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 1.1rem; color: ${pnl >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                                ${pnl >= 0 ? '+' : ''}${pnl.toFixed(0)}€
+                            </span>
+                        </div>
+                    `).join('')
+                    : '<div style="color: var(--text-secondary); text-align: center;">Pas encore de données</div>';
+            }
+
+            updateGlobalStatistics() {
+                const allTrades = this.trades;
+
+                // Global summary
+                const totalCapital = this.accounts.reduce((sum, acc) => {
+                    const accTrades = this.trades.filter(t => t.accountId === acc.id);
+                    const accPnL = accTrades.reduce((s, t) => s + t.pnl, 0);
+                    return sum + acc.baseCapital + accPnL;
+                }, 0);
+
+                const totalPnL = allTrades.reduce((sum, t) => sum + t.pnl, 0);
+                const wins = allTrades.filter(t => t.pnl > 0).length;
+                const losses = allTrades.filter(t => t.pnl < 0).length;
+                const winRate = allTrades.length > 0 ? (wins / allTrades.length * 100).toFixed(1) : 0;
+
+                // Best account
+                let bestAccount = null;
+                let bestAccountPnL = -Infinity;
+                this.accounts.forEach(acc => {
+                    const accTrades = this.trades.filter(t => t.accountId === acc.id);
+                    const accPnL = accTrades.reduce((s, t) => s + t.pnl, 0);
+                    if (accPnL > bestAccountPnL) {
+                        bestAccountPnL = accPnL;
+                        bestAccount = acc;
+                    }
+                });
+
+                document.getElementById('globalCapitalWidget').textContent = this.formatCurrency(totalCapital);
+                document.getElementById('globalAccountsCount').innerHTML = `
+                    <span>●</span>
+                    <span>${this.accounts.length} compte${this.accounts.length > 1 ? 's' : ''}</span>
+                `;
+
+                document.getElementById('globalPnLWidget').textContent = this.formatCurrency(totalPnL);
+                document.getElementById('globalPnLWidget').style.color = totalPnL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+                document.getElementById('globalTradesCount').innerHTML = `
+                    <span>●</span>
+                    <span>${allTrades.length} trades</span>
+                `;
+
+                document.getElementById('globalWinRateWidget').textContent = `${winRate}%`;
+                document.getElementById('globalWinRateWidget').style.color = winRate >= 50 ? 'var(--accent-green)' : 'var(--accent-red)';
+                document.getElementById('globalWinRateDetails').innerHTML = `
+                    <span>○</span>
+                    <span>${wins}W / ${losses}L</span>
+                `;
+
+                if (bestAccount) {
+                    document.getElementById('globalBestAccount').textContent = bestAccount.name;
+                    document.getElementById('globalBestAccountPnL').innerHTML = `
+                        <span>▲</span>
+                        <span>${this.formatCurrency(bestAccountPnL)}</span>
+                    `;
+                    document.getElementById('globalBestAccountPnL').style.color = bestAccountPnL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+                }
+
+                // Global day performance
+                const days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+                const dayPnL = {};
+                days.forEach(day => dayPnL[day] = 0);
+
+                allTrades.forEach(trade => {
+                    const date = new Date(trade.date);
+                    const dayIndex = date.getDay();
+                    const dayName = days[dayIndex === 0 ? 6 : dayIndex - 1];
+                    dayPnL[dayName] += trade.pnl;
+                });
+
+                const maxPnL = Math.max(...Object.values(dayPnL), 1);
+
+                document.getElementById('globalDayPerformance').innerHTML = days.map(day => {
+                    const pnl = dayPnL[day];
+                    const percentage = (Math.abs(pnl) / maxPnL) * 100;
+                    return `
+                        <div class="day-row">
+                            <div class="day-name">${day}</div>
+                            <div class="day-bar-container">
+                                <div class="day-bar-fill" style="width: ${percentage}%"></div>
+                            </div>
+                            <div class="day-value" style="color: ${pnl >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                                ${pnl >= 0 ? '+' : ''}${pnl.toFixed(0)}€
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                // Global Long vs Short
+                const longTrades = allTrades.filter(t => t.type === 'LONG');
+                const shortTrades = allTrades.filter(t => t.type === 'SHORT');
+                
+                const longPnL = longTrades.reduce((sum, t) => sum + t.pnl, 0);
+                const shortPnL = shortTrades.reduce((sum, t) => sum + t.pnl, 0);
+                
+                const longWins = longTrades.filter(t => t.pnl > 0).length;
+                const shortWins = shortTrades.filter(t => t.pnl > 0).length;
+                
+                const longWR = longTrades.length > 0 ? (longWins / longTrades.length * 100).toFixed(0) : 0;
+                const shortWR = shortTrades.length > 0 ? (shortWins / shortTrades.length * 100).toFixed(0) : 0;
+
+                document.getElementById('globalLongPnL').textContent = this.formatCurrency(longPnL);
+                document.getElementById('globalLongPnL').style.color = longPnL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+                document.getElementById('globalLongInfo').textContent = `${longTrades.length} trades | ${longWR}% WR`;
+
+                document.getElementById('globalShortPnL').textContent = this.formatCurrency(shortPnL);
+                document.getElementById('globalShortPnL').style.color = shortPnL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+                document.getElementById('globalShortInfo').textContent = `${shortTrades.length} trades | ${shortWR}% WR`;
+
+                // Global strategy adherence
+                const tradesWithStrategy = allTrades.filter(t => t.followedStrategy);
+                const adherence = allTrades.length > 0 ? (tradesWithStrategy.length / allTrades.length * 100).toFixed(1) : 0;
+
+                document.getElementById('globalStrategyPercent').textContent = `${adherence}%`;
+                document.getElementById('globalStrategyPercent').style.color = adherence >= 70 ? 'var(--accent-green)' : 'var(--accent-red)';
+                document.getElementById('globalStrategyDetails').textContent = `${tradesWithStrategy.length} / ${allTrades.length} trades`;
+
+                const withStrategyPnL = tradesWithStrategy.reduce((sum, t) => sum + t.pnl, 0);
+                const withStrategyWins = tradesWithStrategy.filter(t => t.pnl > 0).length;
+                const withStrategyWR = tradesWithStrategy.length > 0 ? (withStrategyWins / tradesWithStrategy.length * 100).toFixed(0) : 0;
+
+                const withoutStrategy = allTrades.filter(t => !t.followedStrategy);
+                const withoutStrategyPnL = withoutStrategy.reduce((sum, t) => sum + t.pnl, 0);
+                const withoutStrategyWins = withoutStrategy.filter(t => t.pnl > 0).length;
+                const withoutStrategyWR = withoutStrategy.length > 0 ? (withoutStrategyWins / withoutStrategy.length * 100).toFixed(0) : 0;
+
+                document.getElementById('globalWithStrategy').innerHTML = `
+                    <span style="color: ${withStrategyPnL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}; font-size: 1.25rem; font-family: 'Manrope', sans-serif;">
+                        ${this.formatCurrency(withStrategyPnL)}
+                    </span> • ${withStrategyWR}% WR
+                `;
+
+                document.getElementById('globalWithoutStrategy').innerHTML = `
+                    <span style="color: ${withoutStrategyPnL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}; font-size: 1.25rem; font-family: 'Manrope', sans-serif;">
+                        ${this.formatCurrency(withoutStrategyPnL)}
+                    </span> • ${withoutStrategyWR}% WR
+                `;
+
+                // Global best instruments
+                const instrumentPnL = {};
+                allTrades.forEach(trade => {
+                    if (!instrumentPnL[trade.instrument]) {
+                        instrumentPnL[trade.instrument] = 0;
+                    }
+                    instrumentPnL[trade.instrument] += trade.pnl;
+                });
+
+                const sortedInstruments = Object.entries(instrumentPnL)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5);
+
+                document.getElementById('globalBestInstruments').innerHTML = sortedInstruments.length > 0 
+                    ? sortedInstruments.map(([instrument, pnl]) => `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--bg-secondary); border-radius: 8px;">
+                            <span style="font-weight: 600;">${instrument}</span>
+                            <span style="font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 1.1rem; color: ${pnl >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                                ${pnl >= 0 ? '+' : ''}${pnl.toFixed(0)}€
+                            </span>
+                        </div>
+                    `).join('')
+                    : '<div style="color: var(--text-secondary); text-align: center;">Pas encore de données</div>';
+
+                // Accounts comparison
+                const accountsComparison = this.accounts.map(acc => {
+                    const accTrades = this.trades.filter(t => t.accountId === acc.id);
+                    const accPnL = accTrades.reduce((s, t) => s + t.pnl, 0);
+                    const accWins = accTrades.filter(t => t.pnl > 0).length;
+                    const accWR = accTrades.length > 0 ? (accWins / accTrades.length * 100).toFixed(1) : 0;
+                    const accCapital = acc.baseCapital + accPnL;
+                    
+                    return { acc, accPnL, accTrades, accWins, accWR, accCapital };
+                }).sort((a, b) => b.accPnL - a.accPnL);
+
+                document.getElementById('accountsComparison').innerHTML = accountsComparison.map(({acc, accPnL, accTrades, accWins, accWR, accCapital}) => `
+                    <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                            <div>
+                                <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.25rem;">${acc.name}</h3>
+                                <p style="font-size: 0.9rem; color: var(--text-secondary);">🏢 ${acc.propFirm}</p>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 1.75rem; font-weight: 700; font-family: 'Manrope', sans-serif; color: ${accPnL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                                    ${accPnL >= 0 ? '+' : ''}${this.formatCurrency(accPnL)}
+                                </div>
+                                <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                                    ${this.formatCurrency(accCapital)}
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 2rem; font-size: 0.95rem;">
+                            <div>
+                                <span style="color: var(--text-secondary);">Trades:</span>
+                                <span style="font-weight: 700; margin-left: 0.5rem;">${accTrades.length}</span>
+                            </div>
+                            <div>
+                                <span style="color: var(--text-secondary);">Win Rate:</span>
+                                <span style="font-weight: 700; margin-left: 0.5rem; color: ${accWR >= 50 ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                                    ${accWR}%
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Theme Management
+            toggleTheme() {
+                this.currentTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+                localStorage.setItem('theme', this.currentTheme);
+                this.applyTheme();
+            }
+
+            applyTheme() {
+                document.documentElement.setAttribute('data-theme', this.currentTheme);
+                const icon = document.getElementById('themeIcon');
+                if (icon) {
+                    icon.textContent = this.currentTheme === 'dark' ? '☀️' : '🌙';
+                }
+            }
+
+            // Google Drive Integration
+            async initGoogleDrive() {
+                const savedToken = localStorage.getItem('google_access_token');
+                const savedUser = localStorage.getItem('google_user');
+                
+                if (savedToken && savedUser) {
+                    this.accessToken = savedToken;
+                    this.googleUser = JSON.parse(savedUser);
+                    await this.loadFromDrive();
+                }
+            }
+
+            async signInWithGoogle() {
+                try {
+                    const GOOGLE_CLIENT_ID = '5328933201-hhed8j3flifhdf4229sfof4247hugd1h.apps.googleusercontent.com';
+                    const GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
+
+                    const client = google.accounts.oauth2.initTokenClient({
+                        client_id: GOOGLE_CLIENT_ID,
+                        scope: GOOGLE_DRIVE_SCOPE,
+                        callback: async (response) => {
+                            if (response.access_token) {
+                                this.accessToken = response.access_token;
+                                localStorage.setItem('google_access_token', response.access_token);
+                                
+                                const userInfo = await this.getUserInfo(response.access_token);
+                                this.googleUser = userInfo;
+                                localStorage.setItem('google_user', JSON.stringify(userInfo));
+                                
+                                await this.loadFromDrive();
+                                alert('✅ Connecté à Google Drive !');
+                            }
+                        },
+                    });
+                    client.requestAccessToken();
+                } catch (error) {
+                    console.error('Erreur connexion Google:', error);
+                    alert('❌ Erreur de connexion Google');
+                }
+            }
+
+            async getUserInfo(accessToken) {
+                const response = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+                    headers: { Authorization: `Bearer ${accessToken}` }
+                });
+                return await response.json();
+            }
+
+            async saveToDrive() {
+                if (!this.accessToken) return;
+
+                try {
+                    const data = {
+                        settings: this.settings,
+                        accounts: this.accounts,
+                        currentAccountId: this.currentAccountId,
+                        trades: this.trades,
+                        lastSync: new Date().toISOString()
+                    };
+
+                    const content = JSON.stringify(data, null, 2);
+                    const file = new Blob([content], { type: 'application/json' });
+
+                    if (!this.driveFileId) {
+                        const searchResponse = await fetch(
+                            `https://www.googleapis.com/drive/v3/files?q=name='tradezilla-data.json'+and+trashed=false&fields=files(id,name)`,
+                            { headers: { Authorization: `Bearer ${this.accessToken}` }}
+                        );
+                        const searchResult = await searchResponse.json();
+                        if (searchResult.files && searchResult.files.length > 0) {
+                            this.driveFileId = searchResult.files[0].id;
+                        }
+                    }
+
+                    const metadata = { name: 'tradezilla-data.json', mimeType: 'application/json' };
+                    const form = new FormData();
+                    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+                    form.append('file', file);
+
+                    const url = this.driveFileId
+                        ? `https://www.googleapis.com/upload/drive/v3/files/${this.driveFileId}?uploadType=multipart`
+                        : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
+
+                    const response = await fetch(url, {
+                        method: this.driveFileId ? 'PATCH' : 'POST',
+                        headers: { Authorization: `Bearer ${this.accessToken}` },
+                        body: form
+                    });
+
+                    const result = await response.json();
+                    this.driveFileId = result.id;
+                } catch (error) {
+                    console.error('Erreur sauvegarde Drive:', error);
+                }
+            }
+
+            async loadFromDrive() {
+                if (!this.accessToken) return;
+
+                try {
+                    const searchResponse = await fetch(
+                        `https://www.googleapis.com/drive/v3/files?q=name='tradezilla-data.json'+and+trashed=false&fields=files(id,name)`,
+                        { headers: { Authorization: `Bearer ${this.accessToken}` }}
+                    );
+                    const searchResult = await searchResponse.json();
+
+                    if (!searchResult.files || searchResult.files.length === 0) return;
+
+                    this.driveFileId = searchResult.files[0].id;
+
+                    const fileResponse = await fetch(
+                        `https://www.googleapis.com/drive/v3/files/${this.driveFileId}?alt=media`,
+                        { headers: { Authorization: `Bearer ${this.accessToken}` }}
+                    );
+                    const data = await fileResponse.json();
+
+                    if (data.settings) this.settings = data.settings;
+                    if (data.accounts) this.accounts = data.accounts;
+                    if (data.currentAccountId) this.currentAccountId = data.currentAccountId;
+                    if (data.trades) this.trades = data.trades;
+
+                    this.saveSettings();
+                    this.saveAccounts();
+                    this.saveCurrentAccountId();
+                    this.saveTrades();
+
+                    this.updateAllDisplays();
+                } catch (error) {
+                    console.error('Erreur chargement Drive:', error);
                 }
             }
 
@@ -941,7 +2729,6 @@
             }
         }
 
-        // Initialize app
         const journal = new TradingJournal();
     </script>
 </body>
