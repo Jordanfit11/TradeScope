@@ -959,6 +959,33 @@
 
             .top-actions {
                 gap: 0.5rem;
+                flex-wrap: wrap;
+            }
+
+            #googleUserBadge {
+                display: none !important;
+            }
+
+            #googleSignInBtn .desktop-text {
+                display: none;
+            }
+
+            #googleSignInBtn {
+                padding: 0.65rem !important;
+                min-width: auto !important;
+            }
+
+            /* Show connected indicator on mobile when signed in */
+            #googleSignInBtn.connected::after {
+                content: '';
+                position: absolute;
+                top: 4px;
+                right: 4px;
+                width: 8px;
+                height: 8px;
+                background: var(--accent-green);
+                border-radius: 50%;
+                border: 2px solid var(--bg-secondary);
             }
 
             .btn {
@@ -2659,12 +2686,25 @@
                 const userBadge = document.getElementById('googleUserBadge');
 
                 if (signedIn && this.googleUser) {
-                    signInBtn.style.display = 'none';
-                    userBadge.style.display = 'flex';
+                    // Desktop: show badge, hide button
+                    if (window.innerWidth > 768) {
+                        signInBtn.style.display = 'none';
+                        userBadge.style.display = 'flex';
+                        userBadge.style.removeProperty('display');
+                    } else {
+                        // Mobile: show button with green dot
+                        signInBtn.classList.add('connected');
+                        signInBtn.style.display = 'flex';
+                        signInBtn.style.position = 'relative';
+                        userBadge.style.display = 'none';
+                    }
+                    
                     document.getElementById('googleUserNameTop').textContent = this.googleUser.name;
                     document.getElementById('googleUserAvatarTop').src = this.googleUser.picture;
                 } else {
+                    signInBtn.classList.remove('connected');
                     signInBtn.style.display = 'flex';
+                    signInBtn.style.removeProperty('position');
                     userBadge.style.display = 'none';
                 }
             }
