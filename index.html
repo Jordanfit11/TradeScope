@@ -1355,7 +1355,7 @@
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <span style="color: var(--text-secondary); font-size: 1.25rem; font-weight: 300;">•</span>
                         <div id="topAccountDisplay" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1)); border: 1px solid var(--accent-primary); border-radius: 8px; cursor: pointer;" onclick="journal.openAccountModal()">
-                            <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-primary);" id="topAccountName">Compte Principal</span>
+                            <span style="font-weight: 700; font-size: 1.25rem; color: var(--text-primary); font-family: 'Manrope', sans-serif;" id="topAccountName">Compte Principal</span>
                             <span style="font-size: 0.75rem; color: var(--text-secondary);" id="topAccountFirm">Prop Firm</span>
                         </div>
                     </div>
@@ -1372,7 +1372,7 @@
                         <!-- Avatar with initials -->
                         <div style="position: relative; cursor: pointer;" onclick="journal.toggleUserMenu()">
                             <div id="userAvatar" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; color: white; cursor: pointer; box-shadow: 0 2px 8px var(--shadow);">
-                                JD
+                                ☁️
                             </div>
                             <div id="syncIndicator" style="position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; background: var(--accent-green); border: 2px solid var(--bg-secondary); border-radius: 50%;" title="Synchronisé"></div>
                         </div>
@@ -3379,7 +3379,7 @@
                     userBadge.style.display = 'flex';
                     
                     // Generate initials
-                    const initials = this.getInitials(this.googleUser.name || 'User');
+                    const initials = this.getInitials(this.googleUser.name || 'Trader');
                     document.getElementById('userAvatar').textContent = initials;
                     
                     // Update menu
