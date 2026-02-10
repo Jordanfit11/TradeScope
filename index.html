@@ -451,6 +451,19 @@
             document.getElementById('accountForm').addEventListener('submit',e=>{e.preventDefault();this.addAccount();});
             document.querySelectorAll('.filter-pill[data-filter]').forEach(p=>{ p.addEventListener('click',e=>{ document.querySelectorAll('.filter-pill[data-filter]').forEach(x=>x.classList.remove('active')); e.target.classList.add('active'); this.currentFilter=e.target.dataset.filter; this.renderTrades(); }); });
             document.addEventListener('click',e=>{ const um=document.getElementById('userMenu'),ua=document.getElementById('userAvatar'); if(um&&ua&&!um.contains(e.target)&&!ua.contains(e.target)) um.style.display='none'; });
+            // Disable double-tap zoom
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', e => {
+                const now = Date.now();
+                if (now - lastTouchEnd <= 300) {
+                    e.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, false);
+            // Disable pinch zoom
+            document.addEventListener('gesturestart', e => e.preventDefault());
+            document.addEventListener('gesturechange', e => e.preventDefault());
+            document.addEventListener('gestureend', e => e.preventDefault());
         }
 
         switchView(v) { this.currentView=v; document.querySelectorAll('.menu-item').forEach(i=>i.classList.remove('active')); const m=document.querySelector(`[data-view="${v}"]`); if(m) m.classList.add('active'); document.querySelectorAll('.view').forEach(x=>x.classList.remove('active')); document.getElementById(v).classList.add('active'); const t={dashboard:'Dashboard',trades:'Trades',payouts:'Payouts',statistics:'Statistiques',globalStats:'Stats Globales',journal:'Journal',playbook:'Playbook'}; document.getElementById('pageTitle').textContent=t[v]; if(v==='statistics')this.updateStatistics();else if(v==='globalStats')this.updateGlobalStatistics();else if(v==='payouts')this.updatePayoutsView();else if(v==='playbook')this.renderPlaybookView(); this.closeMobileMenu(); }
