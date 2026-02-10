@@ -416,6 +416,19 @@
         <div class="checkbox-group checkbox-payout"><input type="checkbox" id="isPayout" onchange="journal.togglePayoutMode(this.checked)"><label for="isPayout">Payout (retrait — hors stats)</label></div>
         <button type="submit" class="btn" style="width:100%;padding:0.75rem;margin-top:0.5rem;">Enregistrer</button></form></div></div>
 
+    <!-- Trade Details Modal -->
+    <div id="tradeDetailsModal" class="modal">
+        <div class="modal-content" style="max-width:600px;">
+            <div class="modal-header">
+                <h2 class="modal-title">📊 Détails du Trade</h2>
+                <button class="modal-close" onclick="journal.closeTradeDetailsModal()">×</button>
+            </div>
+            <div id="tradeDetailsContent" style="padding:1.5rem;">
+                <!-- Content will be populated by JS -->
+            </div>
+        </div>
+    </div>
+
     <div id="accountModal" class="modal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title">Mes Comptes</h2><button class="modal-close" onclick="journal.closeAccountModal()">×</button></div>
         <div class="account-list" id="accountList"></div><button class="btn btn-outline" onclick="journal.showAddAccountForm()" style="width:100%;">+ Nouveau Compte</button>
         <div id="addAccountForm" style="display:none;margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--border);"><form id="accountForm"><div class="form-group" style="margin-bottom:0.75rem;"><label for="accountName">Nom</label><input type="text" id="accountName" placeholder="Compte Principal" required style="width:100%;"></div><div class="form-group" style="margin-bottom:0.75rem;"><label for="propFirm">Prop Firm</label><input type="text" id="propFirm" placeholder="FTMO..." required style="width:100%;"></div><div class="form-group" style="margin-bottom:1rem;"><label for="accountCapital">Capital (€)</label><input type="number" id="accountCapital" placeholder="50000" required style="width:100%;"></div><div style="display:flex;gap:0.75rem;"><button type="submit" class="btn" style="flex:1;">Créer</button><button type="button" class="btn btn-outline" onclick="journal.hideAddAccountForm()" style="flex:1;">Annuler</button></div></form></div></div></div>
@@ -474,6 +487,90 @@
         closeMobileMenu() { document.getElementById('sidebar').classList.remove('mobile-open'); document.getElementById('mobileOverlay').classList.remove('active'); }
         openTradeModal() { document.getElementById('tradeModal').classList.add('active'); }
         closeTradeModal() { document.getElementById('tradeModal').classList.remove('active'); document.getElementById('tradeForm').reset(); document.getElementById('customInstrumentGroup').style.display='none'; this.togglePayoutMode(false); }
+        
+        openTradeDetailsModal(tradeId) {
+            const trade = this.trades.find(t => t.id === tradeId);
+            if (!trade) return;
+            
+            const rrVal = trade.rr != null ? trade.rr.toFixed(2) : (trade.risk && trade.risk > 0 ? (trade.pnl / trade.risk).toFixed(2) : '-');
+            const rrColor = trade.rr != null ? (trade.rr >= 0 ? 'var(--green)' : 'var(--red)') : (trade.risk && trade.risk > 0 ? (trade.pnl / trade.risk >= 0 ? 'var(--green)' : 'var(--red)') : 'var(--text-3)');
+            
+            const content = `
+                <div style="display:grid;gap:1.25rem;">
+                    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;">
+                        <div style="background:var(--bg-secondary);padding:1rem;border-radius:var(--radius);">
+                            <div style="font-size:0.75rem;color:var(--text-2);margin-bottom:0.25rem;">Instrument</div>
+                            <div style="font-weight:700;font-size:1.1rem;">${trade.instrument || '-'}</div>
+                        </div>
+                        <div style="background:var(--bg-secondary);padding:1rem;border-radius:var(--radius);">
+                            <div style="font-size:0.75rem;color:var(--text-2);margin-bottom:0.25rem;">Date</div>
+                            <div style="font-weight:600;font-family:var(--font-mono);font-size:0.95rem;">${new Date(trade.date).toLocaleDateString('fr-FR')}</div>
+                        </div>
+                    </div>
+                    
+                    <div style="background:var(--bg-secondary);padding:1rem;border-radius:var(--radius);">
+                        <div style="font-size:0.75rem;color:var(--text-2);margin-bottom:0.5rem;">P&L</div>
+                        <div style="font-size:2rem;font-weight:700;font-family:var(--font-display);color:${trade.pnl >= 0 ? 'var(--green)' : 'var(--red)'}">
+                            ${trade.pnl >= 0 ? '+' : ''}${trade.pnl.toFixed(2)}€
+                        </div>
+                        <div style="font-size:0.85rem;color:var(--text-2);margin-top:0.25rem;">
+                            ${trade.pnl >= 0 ? '+' : ''}${trade.pnlPercent.toFixed(2)}% du capital
+                        </div>
+                    </div>
+                    
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
+                        <div style="background:var(--bg-secondary);padding:1rem;border-radius:var(--radius);">
+                            <div style="font-size:0.75rem;color:var(--text-2);margin-bottom:0.25rem;">Type</div>
+                            <span class="trade-type-badge ${(trade.type || '').toLowerCase()}">${trade.type || '-'}</span>
+                        </div>
+                        <div style="background:var(--bg-secondary);padding:1rem;border-radius:var(--radius);">
+                            <div style="font-size:0.75rem;color:var(--text-2);margin-bottom:0.25rem;">Taille</div>
+                            <div style="font-weight:600;font-family:var(--font-mono);">${trade.size || '-'}</div>
+                        </div>
+                        <div style="background:var(--bg-secondary);padding:1rem;border-radius:var(--radius);">
+                            <div style="font-size:0.75rem;color:var(--text-2);margin-bottom:0.25rem;">Risque</div>
+                            <div style="font-weight:600;font-family:var(--font-mono);color:var(--amber);">${trade.risk ? trade.risk.toFixed(0) + '€' : '-'}</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;">
+                        <div style="background:var(--bg-secondary);padding:1rem;border-radius:var(--radius);">
+                            <div style="font-size:0.75rem;color:var(--text-2);margin-bottom:0.25rem;">Risk/Reward</div>
+                            <div style="font-weight:700;font-family:var(--font-mono);font-size:1.1rem;color:${rrColor}">
+                                ${rrVal !== '-' ? rrVal + 'R' : '-'}
+                            </div>
+                        </div>
+                        <div style="background:var(--bg-secondary);padding:1rem;border-radius:var(--radius);">
+                            <div style="font-size:0.75rem;color:var(--text-2);margin-bottom:0.25rem;">Stratégie suivie</div>
+                            <div style="font-size:1.1rem;">${trade.followedStrategy ? '<span style="color:var(--green)">✓ Oui</span>' : '<span style="color:var(--red)">✗ Non</span>'}</div>
+                        </div>
+                    </div>
+                    
+                    ${trade.tradingViewLink ? `
+                    <div style="background:var(--bg-secondary);padding:1rem;border-radius:var(--radius);">
+                        <div style="font-size:0.75rem;color:var(--text-2);margin-bottom:0.5rem;">📈 Chart TradingView</div>
+                        <a href="${trade.tradingViewLink}" target="_blank" class="btn btn-outline" style="display:inline-flex;align-items:center;gap:0.5rem;">
+                            Ouvrir le chart ↗
+                        </a>
+                    </div>
+                    ` : ''}
+                    
+                    ${trade.notes ? `
+                    <div style="background:var(--bg-secondary);padding:1rem;border-radius:var(--radius);">
+                        <div style="font-size:0.75rem;color:var(--text-2);margin-bottom:0.5rem;">📝 Notes</div>
+                        <div style="white-space:pre-wrap;line-height:1.6;color:var(--text-1);">${trade.notes}</div>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            document.getElementById('tradeDetailsContent').innerHTML = content;
+            document.getElementById('tradeDetailsModal').classList.add('active');
+        }
+        
+        closeTradeDetailsModal() {
+            document.getElementById('tradeDetailsModal').classList.remove('active');
+        }
         togglePayoutMode(on) { ['instrument','tradeType','positionSize','riskAmount','tradingViewLink','followedStrategy'].forEach(id=>{document.getElementById(id).disabled=on;}); if(on){document.getElementById('instrument').value='';document.getElementById('positionSize').value='';document.getElementById('riskAmount').value='';document.getElementById('tradingViewLink').value='';document.getElementById('followedStrategy').checked=false;} }
         openAccountModal() { this.renderAccountList(); document.getElementById('accountModal').classList.add('active'); }
         closeAccountModal() { document.getElementById('accountModal').classList.remove('active'); this.hideAddAccountForm(); }
@@ -517,9 +614,9 @@
 
         filterTrades(){const now=new Date();const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());const wa=new Date(today);wa.setDate(wa.getDate()-7);const ms=new Date(now.getFullYear(),now.getMonth(),1);return this.getAccountTrades().filter(t=>{const td=new Date(t.date);switch(this.currentFilter){case'month':return td>=ms;case'week':return td>=wa;case'wins':return t.pnl>0;case'losses':return t.pnl<0;default:return true;}});}
 
-        renderTrades(){const tbody=document.getElementById('tradesTableBody');const ft=this.filterTrades();if(ft.length===0){tbody.innerHTML=`<tr><td colspan="11" class="empty-state"><div class="empty-icon">◈</div><div>Aucun trade trouvé</div></td></tr>`;const cc=document.getElementById('tradesCardsContainer');if(cc)cc.innerHTML=`<div class="empty-state"><div class="empty-icon">◈</div><div>Aucun trade</div></div>`;return;}
-        tbody.innerHTML=ft.map(t=>{const rrVal=t.rr!=null?t.rr.toFixed(2):(t.risk&&t.risk>0?(t.pnl/t.risk).toFixed(2):'-');const rrColor=t.rr!=null?(t.rr>=0?'var(--green)':'var(--red)'):(t.risk&&t.risk>0?(t.pnl/t.risk>=0?'var(--green)':'var(--red)'):'var(--text-3)');return `<tr><td style="font-family:var(--font-mono);font-size:0.82rem;color:var(--text-2);">${new Date(t.date).toLocaleDateString('fr-FR')}</td><td style="font-weight:700;">${t.instrument||'-'}</td><td><span class="trade-type-badge ${(t.type||'').toLowerCase()}">${t.type||'-'}</span></td><td style="font-family:var(--font-mono);">${t.size||'-'}</td><td style="font-family:var(--font-mono);color:var(--amber);">${t.risk?t.risk.toFixed(0)+'€':'-'}</td><td class="pnl-value ${t.pnl>=0?'positive':'negative'}">${t.pnl>=0?'+':''}${t.pnl.toFixed(2)}€</td><td style="font-family:var(--font-mono);font-weight:700;color:${rrColor}">${rrVal!=='-'?rrVal+'R':'-'}</td><td style="color:${t.pnl>=0?'var(--green)':'var(--red)'};font-family:var(--font-mono);">${t.pnl>=0?'+':''}${t.pnlPercent.toFixed(2)}%</td><td style="text-align:center;">${t.followedStrategy?'<span style="color:var(--green)">✓</span>':'<span style="color:var(--red)">✗</span>'}</td><td>${t.tradingViewLink?`<a href="${t.tradingViewLink}" target="_blank" style="color:var(--accent);">↗</a>`:'-'}</td><td><button class="btn-delete" onclick="journal.deleteTrade(${t.id})">×</button></td></tr>`;}).join('');
-        const cc=document.getElementById('tradesCardsContainer');if(cc)cc.innerHTML=ft.map(t=>{const rrVal=t.rr!=null?t.rr.toFixed(2):(t.risk&&t.risk>0?(t.pnl/t.risk).toFixed(2):'-');const rrColor=t.rr!=null?(t.rr>=0?'var(--green)':'var(--red)'):(t.risk&&t.risk>0?(t.pnl/t.risk>=0?'var(--green)':'var(--red)'):'var(--text-3)');return `<div class="trade-card"><div class="trade-card-header"><div><div style="font-weight:700;font-size:1rem;">${t.instrument||'-'}</div><div style="font-size:0.78rem;color:var(--text-2);font-family:var(--font-mono);">${new Date(t.date).toLocaleDateString('fr-FR')}</div></div><div class="pnl-value ${t.pnl>=0?'positive':'negative'}" style="font-size:1.15rem;">${t.pnl>=0?'+':''}${t.pnl.toFixed(2)}€</div></div><div class="trade-card-body"><div class="trade-card-field"><div class="trade-card-label">Type</div><div class="trade-card-value"><span class="trade-type-badge ${(t.type||'').toLowerCase()}">${t.type||'-'}</span></div></div><div class="trade-card-field"><div class="trade-card-label">Taille</div><div class="trade-card-value">${t.size||'-'}</div></div><div class="trade-card-field"><div class="trade-card-label">Risque</div><div class="trade-card-value" style="color:var(--amber);font-family:var(--font-mono);">${t.risk?t.risk.toFixed(0)+'€':'-'}</div></div><div class="trade-card-field"><div class="trade-card-label">R:R</div><div class="trade-card-value" style="color:${rrColor};font-family:var(--font-mono);font-weight:700;">${rrVal!=='-'?rrVal+'R':'-'}</div></div><div class="trade-card-field"><div class="trade-card-label">% Capital</div><div class="trade-card-value" style="color:${t.pnl>=0?'var(--green)':'var(--red)'};font-family:var(--font-mono);">${t.pnl>=0?'+':''}${t.pnlPercent.toFixed(2)}%</div></div><div class="trade-card-field"><div class="trade-card-label">Stratégie</div><div class="trade-card-value">${t.followedStrategy?'<span style="color:var(--green)">✓</span>':'<span style="color:var(--red)">✗</span>'}</div></div></div><div class="trade-card-actions">${t.tradingViewLink?`<a href="${t.tradingViewLink}" target="_blank" class="btn btn-outline" style="flex:1;text-align:center;padding:0.4rem;font-size:0.78rem;">Chart ↗</a>`:''}  <button onclick="journal.deleteTrade(${t.id})" class="btn" style="background:var(--red);flex:${t.tradingViewLink?'0':'1'};padding:0.4rem 0.75rem;font-size:0.78rem;">Suppr.</button></div></div>`;}).join('');}
+        renderTrades(){const tbody=document.getElementById('tradesTableBody');const ft=this.filterTrades();if(ft.length===0){tbody.innerHTML=`<tr><td colspan="12" class="empty-state"><div class="empty-icon">◈</div><div>Aucun trade trouvé</div></td></tr>`;const cc=document.getElementById('tradesCardsContainer');if(cc)cc.innerHTML=`<div class="empty-state"><div class="empty-icon">◈</div><div>Aucun trade</div></div>`;return;}
+        tbody.innerHTML=ft.map(t=>{const rrVal=t.rr!=null?t.rr.toFixed(2):(t.risk&&t.risk>0?(t.pnl/t.risk).toFixed(2):'-');const rrColor=t.rr!=null?(t.rr>=0?'var(--green)':'var(--red)'):(t.risk&&t.risk>0?(t.pnl/t.risk>=0?'var(--green)':'var(--red)'):'var(--text-3)');return `<tr><td style="font-family:var(--font-mono);font-size:0.82rem;color:var(--text-2);">${new Date(t.date).toLocaleDateString('fr-FR')}</td><td style="font-weight:700;">${t.instrument||'-'}</td><td><span class="trade-type-badge ${(t.type||'').toLowerCase()}">${t.type||'-'}</span></td><td style="font-family:var(--font-mono);">${t.size||'-'}</td><td style="font-family:var(--font-mono);color:var(--amber);">${t.risk?t.risk.toFixed(0)+'€':'-'}</td><td class="pnl-value ${t.pnl>=0?'positive':'negative'}">${t.pnl>=0?'+':''}${t.pnl.toFixed(2)}€</td><td style="font-family:var(--font-mono);font-weight:700;color:${rrColor}">${rrVal!=='-'?rrVal+'R':'-'}</td><td style="color:${t.pnl>=0?'var(--green)':'var(--red)'};font-family:var(--font-mono);">${t.pnl>=0?'+':''}${t.pnlPercent.toFixed(2)}%</td><td style="text-align:center;">${t.followedStrategy?'<span style="color:var(--green)">✓</span>':'<span style="color:var(--red)">✗</span>'}</td><td><button class="btn-icon" onclick="journal.openTradeDetailsModal(${t.id})" title="Détails">👁️</button></td><td>${t.tradingViewLink?`<a href="${t.tradingViewLink}" target="_blank" style="color:var(--accent);">↗</a>`:'-'}</td><td><button class="btn-delete" onclick="journal.deleteTrade(${t.id})">×</button></td></tr>`;}).join('');
+        const cc=document.getElementById('tradesCardsContainer');if(cc)cc.innerHTML=ft.map(t=>{const rrVal=t.rr!=null?t.rr.toFixed(2):(t.risk&&t.risk>0?(t.pnl/t.risk).toFixed(2):'-');const rrColor=t.rr!=null?(t.rr>=0?'var(--green)':'var(--red)'):(t.risk&&t.risk>0?(t.pnl/t.risk>=0?'var(--green)':'var(--red)'):'var(--text-3)');return `<div class="trade-card"><div class="trade-card-header"><div><div style="font-weight:700;font-size:1rem;">${t.instrument||'-'}</div><div style="font-size:0.78rem;color:var(--text-2);font-family:var(--font-mono);">${new Date(t.date).toLocaleDateString('fr-FR')}</div></div><div class="pnl-value ${t.pnl>=0?'positive':'negative'}" style="font-size:1.15rem;">${t.pnl>=0?'+':''}${t.pnl.toFixed(2)}€</div></div><div class="trade-card-body"><div class="trade-card-field"><div class="trade-card-label">Type</div><div class="trade-card-value"><span class="trade-type-badge ${(t.type||'').toLowerCase()}">${t.type||'-'}</span></div></div><div class="trade-card-field"><div class="trade-card-label">Taille</div><div class="trade-card-value">${t.size||'-'}</div></div><div class="trade-card-field"><div class="trade-card-label">Risque</div><div class="trade-card-value" style="color:var(--amber);font-family:var(--font-mono);">${t.risk?t.risk.toFixed(0)+'€':'-'}</div></div><div class="trade-card-field"><div class="trade-card-label">R:R</div><div class="trade-card-value" style="color:${rrColor};font-family:var(--font-mono);font-weight:700;">${rrVal!=='-'?rrVal+'R':'-'}</div></div><div class="trade-card-field"><div class="trade-card-label">% Capital</div><div class="trade-card-value" style="color:${t.pnl>=0?'var(--green)':'var(--red)'};font-family:var(--font-mono);">${t.pnl>=0?'+':''}${t.pnlPercent.toFixed(2)}%</div></div><div class="trade-card-field"><div class="trade-card-label">Stratégie</div><div class="trade-card-value">${t.followedStrategy?'<span style="color:var(--green)">✓</span>':'<span style="color:var(--red)">✗</span>'}</div></div></div><div class="trade-card-actions"><button onclick="journal.openTradeDetailsModal(${t.id})" class="btn btn-outline" style="flex:1;padding:0.4rem;font-size:0.78rem;">👁️ Détails</button>${t.tradingViewLink?`<a href="${t.tradingViewLink}" target="_blank" class="btn btn-outline" style="flex:1;text-align:center;padding:0.4rem;font-size:0.78rem;">Chart ↗</a>`:''}  <button onclick="journal.deleteTrade(${t.id})" class="btn" style="background:var(--red);flex:0;padding:0.4rem 0.75rem;font-size:0.78rem;">×</button></div></div>`;}).join('');}
 
         updateAllDisplays(){const a=this.getCurrentAccount();document.getElementById('currentAccountDisplay').textContent=a.isBurned?`${a.name} 🔥`:a.name;document.getElementById('topAccountName').textContent=a.name;document.getElementById('topAccountFirm').textContent=a.propFirm;this.updateWidgets();this.renderCalendar();this.renderWeeksSummary();this.renderTrades();}
 
