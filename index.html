@@ -602,9 +602,24 @@
                 // Try up to 3 times with delays (Drive indexing can be slow)
                 let retries = 3;
                 let res = null;
+                let lastResponse = null;
                 
                 while (retries > 0) {
                     const sr = await fetch('https://www.googleapis.com/drive/v3/files?q=name%3D%27tradescope-data.json%27+and+trashed%3Dfalse&fields=files(id,name)', { headers: { Authorization: 'Bearer ' + this.accessToken } });
+                    lastResponse = sr;
+                    
+                    // Check for auth errors
+                    if (sr.status === 401 || sr.status === 403) {
+                        console.error('❌ Auth error:', sr.status, sr.statusText);
+                        console.error('Token probablement expiré');
+                        alert('⚠️ Session Google Drive expirée!\n\nReconnectez-vous:\n1. Cliquez sur votre avatar\n2. Déconnexion\n3. Reconnectez-vous avec ☁️');
+                        // Clear expired token
+                        localStorage.removeItem('google_access_token');
+                        this.accessToken = null;
+                        this.updateGoogleUI(false);
+                        return;
+                    }
+                    
                     res = await sr.json();
                     
                     if (res.files && res.files.length > 0) {
@@ -627,6 +642,17 @@
                 console.log('📂 Found Drive file:', this.driveFileId);
                 
                 const fr = await fetch('https://www.googleapis.com/drive/v3/files/' + this.driveFileId + '?alt=media', { headers: { Authorization: 'Bearer ' + this.accessToken } });
+                
+                // Check for auth errors on file fetch
+                if (fr.status === 401 || fr.status === 403) {
+                    console.error('❌ Auth error fetching file:', fr.status);
+                    alert('⚠️ Session Google Drive expirée!\n\nReconnectez-vous.');
+                    localStorage.removeItem('google_access_token');
+                    this.accessToken = null;
+                    this.updateGoogleUI(false);
+                    return;
+                }
+                
                 const driveData = await fr.json();
                 
                 // Conflict detection
