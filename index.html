@@ -542,28 +542,52 @@
         async getUserInfo(t){const r=await fetch('https://www.googleapis.com/oauth2/v2/userinfo',{headers:{Authorization:'Bearer '+t}});return await r.json();}
 
         async saveToDrive() {
-            if (!this.accessToken) return;
+            if (!this.accessToken) {
+                console.log('⚠️ saveToDrive: No access token');
+                return;
+            }
             try {
+                console.log('💾 Saving to Drive...');
                 const lastSync = new Date().toISOString();
                 const data = { settings: this.settings, accounts: this.accounts, currentAccountId: this.currentAccountId, trades: this.trades, lastSync: lastSync };
                 localStorage.setItem('lastSync', lastSync);
                 const content = JSON.stringify(data, null, 2);
                 const file = new Blob([content], { type: 'application/json' });
                 if (!this.driveFileId) {
+                    console.log('🔍 Searching for existing file...');
                     const sr = await fetch('https://www.googleapis.com/drive/v3/files?q=name%3D%27tradescope-data.json%27+and+trashed%3Dfalse&fields=files(id,name)', { headers: { Authorization: 'Bearer ' + this.accessToken } });
+                    if (!sr.ok) {
+                        console.error('❌ Drive search failed:', sr.status, sr.statusText);
+                        throw new Error('Drive API error: ' + sr.status);
+                    }
                     const res = await sr.json();
-                    if (res.files && res.files.length > 0) this.driveFileId = res.files[0].id;
+                    if (res.files && res.files.length > 0) {
+                        this.driveFileId = res.files[0].id;
+                        console.log('📂 Found existing file:', this.driveFileId);
+                    } else {
+                        console.log('📝 No existing file, will create new');
+                    }
                 }
                 const meta = { name: 'tradescope-data.json', mimeType: 'application/json' };
                 const form = new FormData();
                 form.append('metadata', new Blob([JSON.stringify(meta)], { type: 'application/json' }));
                 form.append('file', file);
                 const url = this.driveFileId ? 'https://www.googleapis.com/upload/drive/v3/files/' + this.driveFileId + '?uploadType=multipart' : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
+                console.log(this.driveFileId ? '📤 Updating file...' : '📤 Creating file...');
                 const r = await fetch(url, { method: this.driveFileId ? 'PATCH' : 'POST', headers: { Authorization: 'Bearer ' + this.accessToken }, body: form });
+                if (!r.ok) {
+                    console.error('❌ Drive upload failed:', r.status, r.statusText);
+                    const errorBody = await r.text();
+                    console.error('Error details:', errorBody);
+                    throw new Error('Drive upload error: ' + r.status);
+                }
                 const result = await r.json();
                 this.driveFileId = result.id;
-                console.log('✅ Sauvegarde Drive OK');
-            } catch (e) { console.error('Drive save error:', e); }
+                console.log('✅ Sauvegarde Drive OK, fileId:', result.id);
+            } catch (e) { 
+                console.error('❌ Drive save error:', e);
+                console.error('Error details:', e.message);
+            }
         }
 
 
