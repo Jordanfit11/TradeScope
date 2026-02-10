@@ -300,6 +300,8 @@
                         </div>
                         <div id="userMenu" style="display:none;position:absolute;top:48px;right:0;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:0.5rem;min-width:200px;box-shadow:0 8px 24px rgba(0,0,0,0.3);z-index:1000;">
                             <div style="padding:0.65rem;border-bottom:1px solid var(--border);"><div style="font-weight:600;font-size:0.88rem;" id="googleUserNameMenu">User</div><div style="font-size:0.75rem;color:var(--text-2);" id="googleUserEmailMenu">email</div><div style="font-size:0.65rem;color:var(--green);margin-top:0.4rem;font-family:var(--font-mono);">● Sync OK</div></div>
+                            <button onclick="journal.forceSaveToDrive()" style="width:100%;background:transparent;border:none;color:var(--green);padding:0.65rem;border-radius:6px;cursor:pointer;font-size:0.82rem;text-align:left;font-family:var(--font-body);">💾 Push to Drive</button>
+                            <button onclick="journal.debugSync()" style="width:100%;background:transparent;border:none;color:var(--amber);padding:0.65rem;border-radius:6px;cursor:pointer;font-size:0.82rem;text-align:left;font-family:var(--font-body);">🔍 Debug Sync</button>
                             <button onclick="journal.signOutFromTop()" style="width:100%;background:transparent;border:none;color:var(--red);padding:0.65rem;border-radius:6px;cursor:pointer;font-size:0.82rem;text-align:left;font-family:var(--font-body);">Déconnexion</button>
                         </div>
                     </div>
@@ -640,6 +642,47 @@
             console.log('🔄 Force sync...');
             await this.loadFromDrive();
             alert('✅ Sync terminée !');
+        }
+        
+        async debugSync() {
+            console.log('🔍 DEBUG SYNC DATA:');
+            console.log('Local lastSync:', localStorage.getItem('lastSync'));
+            console.log('Local trades count:', this.trades.length);
+            console.log('Local accounts:', this.accounts);
+            
+            if (this.accessToken) {
+                try {
+                    const sr = await fetch('https://www.googleapis.com/drive/v3/files?q=name%3D%27tradescope-data.json%27+and+trashed%3Dfalse&fields=files(id,name)', { headers: { Authorization: 'Bearer ' + this.accessToken } });
+                    const res = await sr.json();
+                    if (res.files && res.files.length > 0) {
+                        const fr = await fetch('https://www.googleapis.com/drive/v3/files/' + res.files[0].id + '?alt=media', { headers: { Authorization: 'Bearer ' + this.accessToken } });
+                        const driveData = await fr.json();
+                        console.log('Drive lastSync:', driveData.lastSync);
+                        console.log('Drive trades count:', driveData.trades.length);
+                        console.log('Drive accounts:', driveData.accounts);
+                        
+                        alert(`Local: ${this.trades.length} trades\nDrive: ${driveData.trades.length} trades\n\nLocal sync: ${localStorage.getItem('lastSync')}\nDrive sync: ${driveData.lastSync}`);
+                    } else {
+                        alert('❌ Aucun fichier trouvé sur Drive!\n\nClique "💾 Push to Drive" pour forcer la sauvegarde.');
+                        console.log('❌ No file on Drive');
+                    }
+                } catch (e) {
+                    console.error('Debug error:', e);
+                    alert('Erreur: ' + e.message);
+                }
+            } else {
+                alert('Pas connecté à Google Drive');
+            }
+        }
+        
+        async forceSaveToDrive() {
+            if (!this.accessToken) {
+                alert('❌ Pas connecté à Google Drive');
+                return;
+            }
+            console.log('💾 Force push to Drive...');
+            await this.saveToDrive();
+            alert('✅ Données sauvegardées sur Drive!');
         }
 
         updatePayoutsView(){const ap=this.getAccountPayouts();const allP=this.getAllPayouts();const at=ap.reduce((s,p)=>s+Math.abs(p.pnl),0);const gt=allP.reduce((s,p)=>s+Math.abs(p.pnl),0);document.getElementById('payoutAccountTotal').textContent=this.formatCurrency(at);document.getElementById('payoutAccountCount').textContent=ap.length+' payouts';document.getElementById('payoutGlobalTotal').textContent=this.formatCurrency(gt);document.getElementById('payoutGlobalCount').textContent=allP.length+' payouts';if(ap.length>0){document.getElementById('payoutLast').textContent=this.formatCurrency(Math.abs(ap[0].pnl));document.getElementById('payoutLastDate').textContent=new Date(ap[0].date).toLocaleDateString('fr-FR');}else{document.getElementById('payoutLast').textContent='\u2014';document.getElementById('payoutLastDate').textContent='\u2014';}document.getElementById('payoutAverage').textContent=this.formatCurrency(ap.length>0?at/ap.length:0);this.renderPayoutsTable();}
