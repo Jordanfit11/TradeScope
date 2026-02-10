@@ -292,7 +292,8 @@
                 <div class="top-actions">
                     <button class="btn-icon" onclick="journal.toggleTheme()" title="Thème"><span id="themeIcon">☀</span></button>
                     <button class="btn-icon" id="googleSignInBtn" onclick="journal.signInWithGoogle()" title="Google Drive">☁</button>
-                    <div id="googleUserBadge" style="display:none;position:relative;">
+                    <div id="googleUserBadge" style="display:none;position:relative;display:flex;align-items:center;gap:0.5rem;">
+                        <button class="btn-icon" onclick="journal.forceSyncNow()" title="Forcer sync" style="background:var(--bg-card);border:1px solid var(--border);">🔄</button>
                         <div style="cursor:pointer;" onclick="journal.toggleUserMenu()">
                             <div id="userAvatar" style="width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#818CF8);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;color:white;">☁</div>
                             <div id="syncIndicator" style="position:absolute;bottom:-2px;right:-2px;width:10px;height:10px;background:var(--green);border:2px solid var(--bg-secondary);border-radius:50%;"></div>
@@ -565,12 +566,21 @@
 
 
         async loadFromDrive() {
-            if (!this.accessToken) return;
+            if (!this.accessToken) {
+                console.log('⚠️ loadFromDrive: No access token');
+                return;
+            }
             try {
+                console.log('📡 Checking Drive for updates...');
                 const sr = await fetch('https://www.googleapis.com/drive/v3/files?q=name%3D%27tradescope-data.json%27+and+trashed%3Dfalse&fields=files(id,name)', { headers: { Authorization: 'Bearer ' + this.accessToken } });
                 const res = await sr.json();
-                if (!res.files || res.files.length === 0) return;
+                if (!res.files || res.files.length === 0) {
+                    console.log('ℹ️ No file found on Drive');
+                    return;
+                }
                 this.driveFileId = res.files[0].id;
+                console.log('📂 Found Drive file:', this.driveFileId);
+                
                 const fr = await fetch('https://www.googleapis.com/drive/v3/files/' + this.driveFileId + '?alt=media', { headers: { Authorization: 'Bearer ' + this.accessToken } });
                 const driveData = await fr.json();
                 
@@ -578,15 +588,22 @@
                 const localLastSync = localStorage.getItem('lastSync');
                 const driveLastSync = driveData.lastSync;
                 
+                console.log('⏰ Local lastSync:', localLastSync);
+                console.log('⏰ Drive lastSync:', driveLastSync);
+                
                 if (!localLastSync || !driveLastSync) {
+                    console.log('📥 First sync - loading from Drive');
                     this.applyDriveData(driveData);
                 } else if (new Date(driveLastSync) > new Date(localLastSync)) {
-                    console.log('📥 Drive data is newer, loading...');
+                    console.log('📥 Drive is newer - loading from Drive');
                     this.applyDriveData(driveData);
                 } else {
-                    console.log('📤 Local data is newer, keeping local');
+                    console.log('📤 Local is newer - keeping local data');
                 }
-            } catch (e) { console.error('Drive load error:', e); }
+            } catch (e) { 
+                console.error('❌ Drive load error:', e);
+                console.error('Error details:', e.message);
+            }
         }
         
         applyDriveData(data) {
@@ -606,11 +623,23 @@
             if (this.syncInterval) clearInterval(this.syncInterval);
             this.syncInterval = setInterval(async () => {
                 if (this.accessToken) {
-                    console.log('🔄 Auto-sync...');
+                    console.log('🔄 Auto-sync check...');
                     await this.loadFromDrive();
+                } else {
+                    console.log('⚠️ No access token, skipping sync');
                 }
-            }, 30000);
-            console.log('✅ Auto-sync activé (30s)');
+            }, 10000); // 10 seconds
+            console.log('✅ Auto-sync activé (10s)');
+        }
+        
+        async forceSyncNow() {
+            if (!this.accessToken) {
+                alert('❌ Pas connecté à Google Drive');
+                return;
+            }
+            console.log('🔄 Force sync...');
+            await this.loadFromDrive();
+            alert('✅ Sync terminée !');
         }
 
         updatePayoutsView(){const ap=this.getAccountPayouts();const allP=this.getAllPayouts();const at=ap.reduce((s,p)=>s+Math.abs(p.pnl),0);const gt=allP.reduce((s,p)=>s+Math.abs(p.pnl),0);document.getElementById('payoutAccountTotal').textContent=this.formatCurrency(at);document.getElementById('payoutAccountCount').textContent=ap.length+' payouts';document.getElementById('payoutGlobalTotal').textContent=this.formatCurrency(gt);document.getElementById('payoutGlobalCount').textContent=allP.length+' payouts';if(ap.length>0){document.getElementById('payoutLast').textContent=this.formatCurrency(Math.abs(ap[0].pnl));document.getElementById('payoutLastDate').textContent=new Date(ap[0].date).toLocaleDateString('fr-FR');}else{document.getElementById('payoutLast').textContent='\u2014';document.getElementById('payoutLastDate').textContent='\u2014';}document.getElementById('payoutAverage').textContent=this.formatCurrency(ap.length>0?at/ap.length:0);this.renderPayoutsTable();}
