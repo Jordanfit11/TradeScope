@@ -598,12 +598,31 @@
             }
             try {
                 console.log('📡 Checking Drive for updates...');
-                const sr = await fetch('https://www.googleapis.com/drive/v3/files?q=name%3D%27tradescope-data.json%27+and+trashed%3Dfalse&fields=files(id,name)', { headers: { Authorization: 'Bearer ' + this.accessToken } });
-                const res = await sr.json();
+                
+                // Try up to 3 times with delays (Drive indexing can be slow)
+                let retries = 3;
+                let res = null;
+                
+                while (retries > 0) {
+                    const sr = await fetch('https://www.googleapis.com/drive/v3/files?q=name%3D%27tradescope-data.json%27+and+trashed%3Dfalse&fields=files(id,name)', { headers: { Authorization: 'Bearer ' + this.accessToken } });
+                    res = await sr.json();
+                    
+                    if (res.files && res.files.length > 0) {
+                        break; // Found it!
+                    }
+                    
+                    retries--;
+                    if (retries > 0) {
+                        console.log(`⏳ File not found yet, retrying... (${retries} left)`);
+                        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+                    }
+                }
+                
                 if (!res.files || res.files.length === 0) {
-                    console.log('ℹ️ No file found on Drive');
+                    console.log('ℹ️ No file found on Drive after retries');
                     return;
                 }
+                
                 this.driveFileId = res.files[0].id;
                 console.log('📂 Found Drive file:', this.driveFileId);
                 
